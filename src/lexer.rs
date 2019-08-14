@@ -1,70 +1,100 @@
-mod token;
-use std::str::Chars;
+use super::token;
 
 #[derive(Default, Debug)]
 struct Lexer {
-    input: &str,
-    position: usize,
-    read_position: usize,
+    input: Vec<char>,
+    position: usize,      // 現在検査中のchの位置を指し示す
+    read_position: usize, // 入力における「次の」位置を指し示す
     ch: char,
 }
 
 impl Lexer {
-    fn new(input: &str) -> &self {
-        let lexer = &Lexer{
-            input: input,
-        }
+    fn new(input: &str) -> Self {
+        let mut lexer = Self {
+            input: input.chars().collect(),
+            ..Default::default()
+        };
+        lexer.read_char(); // position, read_position, chの初期化
         lexer
     }
 
     fn read_char(&mut self) {
-        let ch = self.input.get(self.read_position).unwrap_or("\\u{0000}")
+        if self.read_position >= self.input.len() {
+            // 終端に到達したらNUL文字を入れる
+            self.ch = 0x00_u8.into();
+        } else {
+            self.ch = self.input[self.read_position];
+        }
+        self.position = self.read_position;
+        self.read_position += 1;
+    }
+
+    fn next_token(&mut self) -> token::Token {
+        use token::TokenType::*;
+        use token::*;
+
+        let nul: char = 0x00_u8.into();
+        let tok = match self.ch {
+            '=' => Token::new_token(ASSIGN, self.ch),
+            ';' => Token::new_token(SEMICOLON, self.ch),
+            '(' => Token::new_token(LPAREN, self.ch),
+            ')' => Token::new_token(RPAREN, self.ch),
+            ',' => Token::new_token(COMMA, self.ch),
+            '+' => Token::new_token(PLUS, self.ch),
+            '{' => Token::new_token(LBRACE, self.ch),
+            '}' => Token::new_token(RBRACE, self.ch),
+            nul => Token::new_token(EOF, nul),
+        };
+
+        self.read_char();
+        tok
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use::super::*;
+    use super::*;
 
+    #[derive(Debug)]
     struct ExpectedToken {
-        type: token::TokenType,
-        literal: String,
+        token_type: token::TokenType,
+        literal: char,
     }
 
     impl ExpectedToken {
-        fn new_token(type: token::TokenType, literal: &str) -> Self {
+        fn new_token(token_type: token::TokenType, literal: char) -> Self {
             Self {
-                type,
-                literal: String::from(literal),
+                token_type,
+                literal,
             }
         }
     }
 
     #[test]
-    fn next_token() {
-        use ExpectedToken::*;
-        use token::TokenType::*;
+    fn next_token_confirm() {
+        use super::token::TokenType::*;
+        use super::*;
 
+        let nul: char = 0x00_u8.into();
         let input = "=+(){},;";
         let tests = [
-            new_token(ASSIGN, "="),
-            new_token(PLUS, "+"),
-            new_token(LPAREN, "("),
-            new_token(RPAREN, ")"),
-            new_token(RPAREN, ")"),
-            new_token(LBRACE, "{"),
-            new_token(RBRACE, "}"),
-            new_token(COMMA, ","),
-            new_token(SEMICOLON, ";"),
-            new_token(EOF, ""),
+            ExpectedToken::new_token(ASSIGN, '='),
+            ExpectedToken::new_token(PLUS, '+'),
+            ExpectedToken::new_token(LPAREN, '('),
+            ExpectedToken::new_token(RPAREN, ')'),
+            ExpectedToken::new_token(LBRACE, '{'),
+            ExpectedToken::new_token(RBRACE, '}'),
+            ExpectedToken::new_token(COMMA, ','),
+            ExpectedToken::new_token(SEMICOLON, ';'),
+            ExpectedToken::new_token(EOF, nul),
         ];
 
-        let l = Lexer::new(input);
+        let mut l = Lexer::new(input);
         for tt in tests.iter() {
-            let tok = l.next_token()
+            let tok = l.next_token();
 
-            assert_eq!(tok.type, tt.type);
-            assert_eq!(tok.literal, tt.literal)
+            assert!(tok.token_type.value() == tt.token_type.value());
+            assert_eq!(tok.literal, tt.literal);
         }
     }
 }

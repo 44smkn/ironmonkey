@@ -1,23 +1,33 @@
 pub struct Token {
-    type: TokenType,
-    literal: String,
+    pub token_type: TokenType,
+    pub literal: char,
 }
 
+impl Token {
+    pub fn new_token(token_type: TokenType, literal: char) -> Self {
+        Self {
+            token_type,
+            literal,
+        }
+    }
+}
+
+#[derive(Debug)]
 pub enum TokenType {
     ILLEGAL, // UNKNOWN TOKEN OR STRING
     EOF,     // END OF FILE
 
     // 識別子(Identifer) + literal
-	IDENT,
-	INT,
+    IDENT,
+    INT,
 
     // 演算子(operator)
-	ASSIGN,
-	PLUS,
-	MINUS,
-	BANG,
-	ASTERRISK,
-	SLASH,
+    ASSIGN,
+    PLUS,
+    MINUS,
+    BANG,
+    ASTERRISK,
+    SLASH,
 
     // delimiter
     COMMA,
@@ -34,28 +44,27 @@ pub enum TokenType {
 }
 
 impl TokenType {
-    fn value(&self) -> String {
+    pub fn value(&self) -> String {
         use TokenType::*;
-        String::from( match self {
-            ILLEGAL   => "ILLEGAL",
-            EOF       => "EOF",
-            IDENT     => "IDENT",
-            INT       => "INT",
-            ASSIGN    => "=",
-            PLUS      => "+",
-            MINUS     => "-",
-            BANG      => "!",
+        String::from(match self {
+            ILLEGAL => "ILLEGAL",
+            EOF => "EOF",
+            IDENT => "IDENT",
+            INT => "INT",
+            ASSIGN => "=",
+            PLUS => "+",
+            MINUS => "-",
+            BANG => "!",
             ASTERRISK => "*",
-            SLASH     => "/",
-            COMMA     => ",",
+            SLASH => "/",
+            COMMA => ",",
             SEMICOLON => ";",
-            LPAREN    => "(",
-            RPAREN    => ")",
-            LBRACE    => "{",
-            RBRACE    => "}",
-            FUNCTION  => "FUNCTION",
-            LET       => "LET",
+            LPAREN => "(",
+            RPAREN => ")",
+            LBRACE => "{",
+            RBRACE => "}",
+            FUNCTION => "FUNCTION",
+            LET => "LET",
         })
     }
 }
-
