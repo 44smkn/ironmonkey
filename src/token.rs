@@ -18,21 +18,44 @@ pub enum TokenType {
 	BANG,
 	ASTERRISK,
 	SLASH,
+
+    // delimiter
+    COMMA,
+    SEMICOLON,
+
+    LPAREN,
+    RPAREN,
+    LBRACE,
+    RBRACE,
+
+    // keyword
+    FUNCTION,
+    LET,
 }
 
 impl TokenType {
     fn value(&self) -> String {
-        match self {
-            TokenType::ILLEGAL => String::from("ILLEGAL"),
-            TokenType::EOF => String::from("EOF"),
-            TokenType::IDENT => String::from("IDENT"),
-            TokenType::ASSIGN => String::from("="),
-            TokenType::PLUS => String::from("+"),
-            TokenType::MINUS => String::from("-"),
-            TokenType::BANG => String::from("!"),
-            TokenType::ASTERRISK => String::from("*"),
-            TokenType::SLASH => String::from("/"),
-        }
+        use TokenType::*;
+        String::from( match self {
+            ILLEGAL   => "ILLEGAL",
+            EOF       => "EOF",
+            IDENT     => "IDENT",
+            INT       => "INT",
+            ASSIGN    => "=",
+            PLUS      => "+",
+            MINUS     => "-",
+            BANG      => "!",
+            ASTERRISK => "*",
+            SLASH     => "/",
+            COMMA     => ",",
+            SEMICOLON => ";",
+            LPAREN    => "(",
+            RPAREN    => ")",
+            LBRACE    => "{",
+            RBRACE    => "}",
+            FUNCTION  => "FUNCTION",
+            LET       => "LET",
+        })
     }
 }
 
