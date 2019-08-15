@@ -28,18 +28,18 @@ impl Lexer {
         use token::TokenType::*;
         use token::*;
 
-        let mut buffer: [u8; 1];
+        let to_literal: fn(&Lexer) -> String = |l| l.ch.unwrap().to_string();
         let tok = match self.ch {
-            Some('=') => Token::new_token(ASSIGN, self.ch.unwrap().to_string()),
-            Some(';') => Token::new_token(SEMICOLON, self.ch.unwrap().to_string()),
-            Some('(') => Token::new_token(LPAREN, self.ch.unwrap().to_string()),
-            Some(')') => Token::new_token(RPAREN, self.ch.unwrap().to_string()),
-            Some(',') => Token::new_token(COMMA, self.ch.unwrap().to_string()),
-            Some('+') => Token::new_token(PLUS, self.ch.unwrap().to_string()),
-            Some('{') => Token::new_token(LBRACE, self.ch.unwrap().to_string()),
-            Some('}') => Token::new_token(RBRACE, self.ch.unwrap().to_string()),
+            Some('=') => Token::new_token(ASSIGN, to_literal(self)),
+            Some(';') => Token::new_token(SEMICOLON, to_literal(self)),
+            Some('(') => Token::new_token(LPAREN, to_literal(self)),
+            Some(')') => Token::new_token(RPAREN, to_literal(self)),
+            Some(',') => Token::new_token(COMMA, to_literal(self)),
+            Some('+') => Token::new_token(PLUS, to_literal(self)),
+            Some('{') => Token::new_token(LBRACE, to_literal(self)),
+            Some('}') => Token::new_token(RBRACE, to_literal(self)),
             None => Token::new_token(EOF, "".to_string()),
-            _ => Token::new_token(ILLEGAL, self.ch.unwrap().to_string()),
+            _ => Token::new_token(ILLEGAL, to_literal(self)),
         };
 
         self.read_char();
