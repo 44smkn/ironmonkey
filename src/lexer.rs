@@ -57,14 +57,14 @@ mod tests {
 
     #[derive(Debug)]
     struct ExpectedToken {
-        token_type: token::TokenType,
+        expected_type: token::TokenType,
         literal: char,
     }
 
     impl ExpectedToken {
-        fn new_token(token_type: token::TokenType, literal: char) -> Self {
+        fn new_token(expected_type: token::TokenType, literal: char) -> Self {
             Self {
-                token_type,
+                expected_type,
                 literal,
             }
         }
@@ -90,11 +90,24 @@ mod tests {
         ];
 
         let mut l = Lexer::new(input);
-        for tt in tests.iter() {
+        for (i, tt) in tests.iter().enumerate() {
             let tok = l.next_token();
 
-            assert!(tok.token_type.value() == tt.token_type.value());
-            assert_eq!(tok.literal, tt.literal);
+            assert!(
+                tok.token_type.value() == tt.expected_type.value(),
+                "tests[{}], - tokentype wrong. expected={}, got={}",
+                i,
+                tt.expected_type.value(),
+                tok.token_type.value()
+            );
+            assert_eq!(
+                tok.literal,
+                tt.literal,
+                "tests[{}], - literal wrong. expected={}, got={}",
+                i,
+                tt.expected_type.value(),
+                tok.token_type.value()
+            );
         }
     }
 }
