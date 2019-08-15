@@ -1,10 +1,10 @@
 pub struct Token {
     pub token_type: TokenType,
-    pub literal: char,
+    pub literal: String,
 }
 
 impl Token {
-    pub fn new_token(token_type: TokenType, literal: char) -> Self {
+    pub fn new_token(token_type: TokenType, literal: String) -> Self {
         Self {
             token_type,
             literal,

@@ -28,17 +28,18 @@ impl Lexer {
         use token::TokenType::*;
         use token::*;
 
+        let mut buffer: [u8; 1];
         let tok = match self.ch {
-            Some('=') => Token::new_token(ASSIGN, self.ch.unwrap()),
-            Some(';') => Token::new_token(SEMICOLON, self.ch.unwrap()),
-            Some('(') => Token::new_token(LPAREN, self.ch.unwrap()),
-            Some(')') => Token::new_token(RPAREN, self.ch.unwrap()),
-            Some(',') => Token::new_token(COMMA, self.ch.unwrap()),
-            Some('+') => Token::new_token(PLUS, self.ch.unwrap()),
-            Some('{') => Token::new_token(LBRACE, self.ch.unwrap()),
-            Some('}') => Token::new_token(RBRACE, self.ch.unwrap()),
-            None => Token::new_token(EOF, 0x00_u8.into()),
-            _ => Token::new_token(ILLEGAL, self.ch.unwrap()),
+            Some('=') => Token::new_token(ASSIGN, self.ch.unwrap().to_string()),
+            Some(';') => Token::new_token(SEMICOLON, self.ch.unwrap().to_string()),
+            Some('(') => Token::new_token(LPAREN, self.ch.unwrap().to_string()),
+            Some(')') => Token::new_token(RPAREN, self.ch.unwrap().to_string()),
+            Some(',') => Token::new_token(COMMA, self.ch.unwrap().to_string()),
+            Some('+') => Token::new_token(PLUS, self.ch.unwrap().to_string()),
+            Some('{') => Token::new_token(LBRACE, self.ch.unwrap().to_string()),
+            Some('}') => Token::new_token(RBRACE, self.ch.unwrap().to_string()),
+            None => Token::new_token(EOF, "".to_string()),
+            _ => Token::new_token(ILLEGAL, self.ch.unwrap().to_string()),
         };
 
         self.read_char();
@@ -53,11 +54,11 @@ mod tests {
     #[derive(Debug)]
     struct ExpectedToken {
         expected_type: token::TokenType,
-        literal: char,
+        literal: String,
     }
 
     impl ExpectedToken {
-        fn new_token(expected_type: token::TokenType, literal: char) -> Self {
+        fn new_token(expected_type: token::TokenType, literal: String) -> Self {
             Self {
                 expected_type,
                 literal,
@@ -71,17 +72,25 @@ mod tests {
         use super::*;
 
         let nul: char = 0x00_u8.into();
-        let input = "=+(){},;";
+        let input = "let five = 5;
+let ten = 10;
+
+let add = fn(x, y) {
+    x + y;
+};
+
+let result = add(five, ten);
+";
         let tests = [
-            ExpectedToken::new_token(ASSIGN, '='),
-            ExpectedToken::new_token(PLUS, '+'),
-            ExpectedToken::new_token(LPAREN, '('),
-            ExpectedToken::new_token(RPAREN, ')'),
-            ExpectedToken::new_token(LBRACE, '{'),
-            ExpectedToken::new_token(RBRACE, '}'),
-            ExpectedToken::new_token(COMMA, ','),
-            ExpectedToken::new_token(SEMICOLON, ';'),
-            ExpectedToken::new_token(EOF, nul),
+            ExpectedToken::new_token(ASSIGN, "=".to_string()),
+            ExpectedToken::new_token(PLUS, "+".to_string()),
+            ExpectedToken::new_token(LPAREN, "(".to_string()),
+            ExpectedToken::new_token(RPAREN, ")".to_string()),
+            ExpectedToken::new_token(LBRACE, "{".to_string()),
+            ExpectedToken::new_token(RBRACE, "}".to_string()),
+            ExpectedToken::new_token(COMMA, ",".to_string()),
+            ExpectedToken::new_token(SEMICOLON, ";".to_string()),
+            ExpectedToken::new_token(EOF, "".to_string()),
         ];
 
         let mut l = Lexer::new(input);
