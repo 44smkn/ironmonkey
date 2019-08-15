@@ -44,9 +44,9 @@ pub enum TokenType {
 }
 
 impl TokenType {
-    pub fn value(&self) -> String {
+    pub fn value(&self) -> &'static str {
         use TokenType::*;
-        String::from(match self {
+        match self {
             ILLEGAL => "ILLEGAL",
             EOF => "EOF",
             IDENT => "IDENT",
@@ -65,6 +65,6 @@ impl TokenType {
             RBRACE => "}",
             FUNCTION => "FUNCTION",
             LET => "LET",
-        })
+        }
     }
 }

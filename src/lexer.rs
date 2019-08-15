@@ -5,7 +5,7 @@ struct Lexer {
     input: Vec<char>,
     position: usize,      // 現在検査中のchの位置を指し示す
     read_position: usize, // 入力における「次の」位置を指し示す
-    ch: char,
+    ch: Option<char>,
 }
 
 impl Lexer {
@@ -19,12 +19,7 @@ impl Lexer {
     }
 
     fn read_char(&mut self) {
-        if self.read_position >= self.input.len() {
-            // 終端に到達したらNUL文字を入れる
-            self.ch = 0x00_u8.into();
-        } else {
-            self.ch = self.input[self.read_position];
-        }
+        self.ch = self.input.get(self.read_position).map(|ch| *ch);
         self.position = self.read_position;
         self.read_position += 1;
     }
@@ -33,17 +28,17 @@ impl Lexer {
         use token::TokenType::*;
         use token::*;
 
-        let nul: char = 0x00_u8.into();
         let tok = match self.ch {
-            '=' => Token::new_token(ASSIGN, self.ch),
-            ';' => Token::new_token(SEMICOLON, self.ch),
-            '(' => Token::new_token(LPAREN, self.ch),
-            ')' => Token::new_token(RPAREN, self.ch),
-            ',' => Token::new_token(COMMA, self.ch),
-            '+' => Token::new_token(PLUS, self.ch),
-            '{' => Token::new_token(LBRACE, self.ch),
-            '}' => Token::new_token(RBRACE, self.ch),
-            nul => Token::new_token(EOF, nul),
+            Some('=') => Token::new_token(ASSIGN, self.ch.unwrap()),
+            Some(';') => Token::new_token(SEMICOLON, self.ch.unwrap()),
+            Some('(') => Token::new_token(LPAREN, self.ch.unwrap()),
+            Some(')') => Token::new_token(RPAREN, self.ch.unwrap()),
+            Some(',') => Token::new_token(COMMA, self.ch.unwrap()),
+            Some('+') => Token::new_token(PLUS, self.ch.unwrap()),
+            Some('{') => Token::new_token(LBRACE, self.ch.unwrap()),
+            Some('}') => Token::new_token(RBRACE, self.ch.unwrap()),
+            None => Token::new_token(EOF, 0x00_u8.into()),
+            _ => Token::new_token(ILLEGAL, self.ch.unwrap()),
         };
 
         self.read_char();
