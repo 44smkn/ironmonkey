@@ -45,6 +45,10 @@ impl Lexer {
         self.read_char();
         tok
     }
+
+    fn skip_white_space(&self) -> bool {
+        self.ch.as_ref().map_or(false, char::is_ascii_whitespace)
+    }
 }
 
 #[cfg(test)]
