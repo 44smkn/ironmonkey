@@ -52,6 +52,10 @@ impl Lexer {
         tok
     }
 
+    fn skip_white_space(&self) -> bool {
+        self.ch.as_ref().map_or(false, char::is_ascii_whitespace)
+    }
+
     fn read_identifer(&mut self) -> String {
         let position = self.position;
         while is_letter(self.ch) {
