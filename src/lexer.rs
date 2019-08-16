@@ -28,23 +28,41 @@ impl Lexer {
         use token::TokenType::*;
         use token::*;
 
-        let to_literal: fn(&Lexer) -> String = |l| l.ch.unwrap().to_string();
         let tok = match self.ch {
-            Some('=') => Token::new_token(ASSIGN, to_literal(self)),
-            Some(';') => Token::new_token(SEMICOLON, to_literal(self)),
-            Some('(') => Token::new_token(LPAREN, to_literal(self)),
-            Some(')') => Token::new_token(RPAREN, to_literal(self)),
-            Some(',') => Token::new_token(COMMA, to_literal(self)),
-            Some('+') => Token::new_token(PLUS, to_literal(self)),
-            Some('{') => Token::new_token(LBRACE, to_literal(self)),
-            Some('}') => Token::new_token(RBRACE, to_literal(self)),
-            None => Token::new_token(EOF, "".to_string()),
-            _ => Token::new_token(ILLEGAL, to_literal(self)),
+            Some('=') => Token::new_token_from_char(ASSIGN, self.ch),
+            Some(';') => Token::new_token_from_char(SEMICOLON, self.ch),
+            Some('(') => Token::new_token_from_char(LPAREN, self.ch),
+            Some(')') => Token::new_token_from_char(RPAREN, self.ch),
+            Some(',') => Token::new_token_from_char(COMMA, self.ch),
+            Some('+') => Token::new_token_from_char(PLUS, self.ch),
+            Some('{') => Token::new_token_from_char(LBRACE, self.ch),
+            Some('}') => Token::new_token_from_char(RBRACE, self.ch),
+            None => Token::new_token_from_char(EOF, self.ch),
+            _ => {
+                if is_letter(self.ch) {
+                    let literal = self.read_identifer();
+                    Token::new_token_from_str(TokenType::lookup_iden(&literal), literal)
+                } else {
+                    Token::new_token_from_char(ILLEGAL, self.ch)
+                }
+            },
         };
 
         self.read_char();
         tok
     }
+
+    fn read_identifer(&mut self) -> String {
+        let position = self.position;
+        while is_letter(self.ch) {
+            self.read_char();
+        }
+        self.input[position..self.position].into_iter().collect()
+    }
+}
+
+fn is_letter(ch: Option<char>) -> bool {
+    ch.map_or(false, |v| 'a' <= v && v <= 'z' ||  'A' <= v && v <= 'Z' || v == '_')
 }
 
 #[cfg(test)]
