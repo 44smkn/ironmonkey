@@ -28,6 +28,10 @@ impl Lexer {
         use token::TokenType::*;
         use token::*;
 
+        self.skip_white_space();
+
+        // TODO: early returnのための対応をスマートにする
+        let mut ret = false;
         let tok = match self.ch {
             Some('=') => Token::new_token_from_char(ASSIGN, self.ch),
             Some(';') => Token::new_token_from_char(SEMICOLON, self.ch),
@@ -40,20 +44,27 @@ impl Lexer {
             None => Token::new_token_from_char(EOF, self.ch),
             _ => {
                 if is_letter(self.ch) {
+                    ret = true;
                     let literal = self.read_identifer();
                     Token::new_token_from_str(TokenType::lookup_iden(&literal), literal)
+                } else if is_digit(self.ch) {
+                    ret = true;
+                    Token::new_token_from_str(INT, self.read_number())
                 } else {
                     Token::new_token_from_char(ILLEGAL, self.ch)
                 }
-            },
+            }
         };
 
+        if ret { return tok };
         self.read_char();
         tok
     }
 
-    fn skip_white_space(&self) -> bool {
-        self.ch.as_ref().map_or(false, char::is_ascii_whitespace)
+    fn skip_white_space(&mut self) {
+        while self.ch.as_ref().map_or(false, char::is_ascii_whitespace) {
+            self.read_char();
+        }
     }
 
     fn read_identifer(&mut self) -> String {
@@ -63,10 +74,22 @@ impl Lexer {
         }
         self.input[position..self.position].into_iter().collect()
     }
+
+    fn read_number(&mut self) -> String {
+        let position = self.position;
+        while is_digit(self.ch) {
+            self.read_char();
+        }
+        self.input[position..self.position].into_iter().collect()
+    }
 }
 
 fn is_letter(ch: Option<char>) -> bool {
-    ch.map_or(false, |v| 'a' <= v && v <= 'z' ||  'A' <= v && v <= 'Z' || v == '_')
+    ch.map_or(false, |v| v.is_ascii_alphabetic() || v == '_')
+}
+
+fn is_digit(ch: Option<char>) -> bool {
+    ch.as_ref().map_or(false, char::is_ascii_digit)
 }
 
 #[cfg(test)]
