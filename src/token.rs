@@ -4,7 +4,14 @@ pub struct Token {
 }
 
 impl Token {
-    pub fn new_token(token_type: TokenType, literal: String) -> Self {
+    pub fn new_token_from_char(token_type: TokenType, literal: Option<char>) -> Self {
+        Self {
+            token_type,
+            literal: literal.map_or("".to_string(), |v| v.to_string())
+        }
+    }
+
+    pub fn new_token_from_str(token_type: TokenType, literal: String) -> Self {
         Self {
             token_type,
             literal,
@@ -65,6 +72,14 @@ impl TokenType {
             RBRACE => "}",
             FUNCTION => "FUNCTION",
             LET => "LET",
+        }
+    }
+
+    pub fn lookup_iden(ident: &str) -> TokenType {
+        match ident {
+            "fn" => TokenType::FUNCTION,
+            "let" => TokenType::LET,
+            _ => TokenType::IDENT,
         }
     }
 }
