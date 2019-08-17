@@ -22,90 +22,90 @@ impl Token {
 
 #[derive(Debug)]
 pub enum TokenType {
-    ILLEGAL, // UNKNOWN TOKEN OR STRING
-    EOF,     // END OF FILE
+    Illegal, // UNKNOWN TOKEN OR STRING
+    Eof,     // END OF FILE
 
     // 識別子(Identifer) + literal
-    IDENT,
-    INT,
+    Ident,
+    Int,
 
     // 演算子(operator)
-    ASSIGN,
-    PLUS,
-    MINUS,
-    BANG,
-    ASTERRISK,
-    SLASH,
+    Assign,
+    Plus,
+    Minus,
+    Bang,
+    Asterisk,
+    Slash,
 
-    LT,
-    GT,
+    Lt,
+    Gt,
 
-    EQ,
-    NOT_EQ,
+    Equal,
+    NotEqual,
 
     // delimiter
-    COMMA,
-    SEMICOLON,
+    Comma,
+    Semicolon,
 
-    LPAREN,
-    RPAREN,
-    LBRACE,
-    RBRACE,
+    Lparen,
+    Rparen,
+    Lbrace,
+    Rbrace,
 
     // keyword
-    FUNCTION,
-    LET,
-    TRUE,
-    FALSE,
-    IF,
-    ELSE,
-    RETURN,
+    Function,
+    Let,
+    True,
+    False,
+    If,
+    Else,
+    Return,
 }
 
 impl TokenType {
     pub fn value(&self) -> &'static str {
         use TokenType::*;
         match self {
-            ILLEGAL => "ILLEGAL",
-            EOF => "EOF",
-            IDENT => "IDENT",
-            INT => "INT",
-            ASSIGN => "=",
-            PLUS => "+",
-            MINUS => "-",
-            BANG => "!",
-            ASTERRISK => "*",
-            SLASH => "/",
-            LT => "<",
-            GT => ">",
-            EQ => "==",
-            NOT_EQ => "!=",
-            COMMA => ",",
-            SEMICOLON => ";",
-            LPAREN => "(",
-            RPAREN => ")",
-            LBRACE => "{",
-            RBRACE => "}",
-            FUNCTION => "FUNCTION",
-            LET => "LET",
-            TRUE => "TRUE",
-            FALSE => "FALSE",
-            IF => "IF",
-            ELSE => "ELSE",
-            RETURN => "RETURN",
+            Illegal => "ILLEGAL",
+            Eof => "EOF",
+            Ident => "IDENT",
+            Int => "INT",
+            Assign => "=",
+            Plus => "+",
+            Minus => "-",
+            Bang => "!",
+            Asterisk => "*",
+            Slash => "/",
+            Lt => "<",
+            Gt => ">",
+            Equal => "==",
+            NotEqual => "!=",
+            Comma => ",",
+            Semicolon => ";",
+            Lparen => "(",
+            Rparen => ")",
+            Lbrace => "{",
+            Rbrace => "}",
+            Function => "FUNCTION",
+            Let => "LET",
+            True => "TRUE",
+            False => "FALSE",
+            If => "IF",
+            Else => "ELSE",
+            Return => "RETURN",
         }
     }
 
     pub fn lookup_iden(ident: &str) -> TokenType {
         match ident {
-            "fn" => TokenType::FUNCTION,
-            "let" => TokenType::LET,
-            "true" => TokenType::TRUE,
-            "false" => TokenType::FALSE,
-            "if" => TokenType::IF,
-            "else" => TokenType::ELSE,
-            "return" => TokenType::RETURN,
-            _ => TokenType::IDENT,
+            "fn" => TokenType::Function,
+            "let" => TokenType::Let,
+            "true" => TokenType::True,
+            "false" => TokenType::False,
+            "if" => TokenType::If,
+            "else" => TokenType::Else,
+            "return" => TokenType::Return,
+            _ => TokenType::Ident,
         }
     }
 }

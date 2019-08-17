@@ -36,32 +36,32 @@ impl Lexer {
             Some('=') => {
                 if let Some('=') = self.peek_char() {
                     self.read_char();
-                    Token::new_token_from_str(EQ, "==")
+                    Token::new_token_from_str(Equal, "==")
                 } else {
-                    Token::new_token_from_char(ASSIGN, self.ch)
+                    Token::new_token_from_char(Assign, self.ch)
                 }
             }
-            Some(';') => Token::new_token_from_char(SEMICOLON, self.ch),
-            Some('(') => Token::new_token_from_char(LPAREN, self.ch),
-            Some(')') => Token::new_token_from_char(RPAREN, self.ch),
-            Some(',') => Token::new_token_from_char(COMMA, self.ch),
-            Some('+') => Token::new_token_from_char(PLUS, self.ch),
-            Some('-') => Token::new_token_from_char(MINUS, self.ch),
+            Some(';') => Token::new_token_from_char(Semicolon, self.ch),
+            Some('(') => Token::new_token_from_char(Lparen, self.ch),
+            Some(')') => Token::new_token_from_char(Rparen, self.ch),
+            Some(',') => Token::new_token_from_char(Comma, self.ch),
+            Some('+') => Token::new_token_from_char(Plus, self.ch),
+            Some('-') => Token::new_token_from_char(Minus, self.ch),
             Some('!') => {
                 if let Some('=') = self.peek_char() {
                     self.read_char();
-                    Token::new_token_from_str(NOT_EQ, "!=")
+                    Token::new_token_from_str(NotEqual, "!=")
                 } else {
-                    Token::new_token_from_char(BANG, self.ch)
+                    Token::new_token_from_char(Bang, self.ch)
                 }
-            },
-            Some('*') => Token::new_token_from_char(ASTERRISK, self.ch),
-            Some('/') => Token::new_token_from_char(SLASH, self.ch),
-            Some('<') => Token::new_token_from_char(LT, self.ch),
-            Some('>') => Token::new_token_from_char(GT, self.ch),
-            Some('{') => Token::new_token_from_char(LBRACE, self.ch),
-            Some('}') => Token::new_token_from_char(RBRACE, self.ch),
-            None => Token::new_token_from_char(EOF, self.ch),
+            }
+            Some('*') => Token::new_token_from_char(Asterisk, self.ch),
+            Some('/') => Token::new_token_from_char(Slash, self.ch),
+            Some('<') => Token::new_token_from_char(Lt, self.ch),
+            Some('>') => Token::new_token_from_char(Gt, self.ch),
+            Some('{') => Token::new_token_from_char(Lbrace, self.ch),
+            Some('}') => Token::new_token_from_char(Rbrace, self.ch),
+            None => Token::new_token_from_char(Eof, self.ch),
             _ => {
                 if is_letter(self.ch) {
                     ret = true;
@@ -69,9 +69,9 @@ impl Lexer {
                     Token::new_token_from_str(TokenType::lookup_iden(&literal), &literal)
                 } else if is_digit(self.ch) {
                     ret = true;
-                    Token::new_token_from_str(INT, &self.read_number())
+                    Token::new_token_from_str(Int, &self.read_number())
                 } else {
-                    Token::new_token_from_char(ILLEGAL, self.ch)
+                    Token::new_token_from_char(Illegal, self.ch)
                 }
             }
         };
@@ -164,80 +164,80 @@ if (5 < 10) {
 10 != 9;
 ";
         let tests = [
-            ExpectedToken::new_token(LET, "let"),
-            ExpectedToken::new_token(IDENT, "five"),
-            ExpectedToken::new_token(ASSIGN, "="),
-            ExpectedToken::new_token(INT, "5"),
-            ExpectedToken::new_token(SEMICOLON, ";"),
-            ExpectedToken::new_token(LET, "let"),
-            ExpectedToken::new_token(IDENT, "ten"),
-            ExpectedToken::new_token(ASSIGN, "="),
-            ExpectedToken::new_token(INT, "10"),
-            ExpectedToken::new_token(SEMICOLON, ";"),
-            ExpectedToken::new_token(LET, "let"),
-            ExpectedToken::new_token(IDENT, "add"),
-            ExpectedToken::new_token(ASSIGN, "="),
-            ExpectedToken::new_token(FUNCTION, "fn"),
-            ExpectedToken::new_token(LPAREN, "("),
-            ExpectedToken::new_token(IDENT, "x"),
-            ExpectedToken::new_token(COMMA, ","),
-            ExpectedToken::new_token(IDENT, "y"),
-            ExpectedToken::new_token(RPAREN, ")"),
-            ExpectedToken::new_token(LBRACE, "{"),
-            ExpectedToken::new_token(IDENT, "x"),
-            ExpectedToken::new_token(PLUS, "+"),
-            ExpectedToken::new_token(IDENT, "y"),
-            ExpectedToken::new_token(SEMICOLON, ";"),
-            ExpectedToken::new_token(RBRACE, "}"),
-            ExpectedToken::new_token(SEMICOLON, ";"),
-            ExpectedToken::new_token(LET, "let"),
-            ExpectedToken::new_token(IDENT, "result"),
-            ExpectedToken::new_token(ASSIGN, "="),
-            ExpectedToken::new_token(IDENT, "add"),
-            ExpectedToken::new_token(LPAREN, "("),
-            ExpectedToken::new_token(IDENT, "five"),
-            ExpectedToken::new_token(COMMA, ","),
-            ExpectedToken::new_token(IDENT, "ten"),
-            ExpectedToken::new_token(RPAREN, ")"),
-            ExpectedToken::new_token(SEMICOLON, ";"),
-            ExpectedToken::new_token(BANG, "!"),
-            ExpectedToken::new_token(MINUS, "-"),
-            ExpectedToken::new_token(SLASH, "/"),
-            ExpectedToken::new_token(ASTERRISK, "*"),
-            ExpectedToken::new_token(INT, "5"),
-            ExpectedToken::new_token(SEMICOLON, ";"),
-            ExpectedToken::new_token(INT, "5"),
-            ExpectedToken::new_token(LT, "<"),
-            ExpectedToken::new_token(INT, "10"),
-            ExpectedToken::new_token(GT, ">"),
-            ExpectedToken::new_token(INT, "5"),
-            ExpectedToken::new_token(SEMICOLON, ";"),
-            ExpectedToken::new_token(IF, "if"),
-            ExpectedToken::new_token(LPAREN, "("),
-            ExpectedToken::new_token(INT, "5"),
-            ExpectedToken::new_token(LT, "<"),
-            ExpectedToken::new_token(INT, "10"),
-            ExpectedToken::new_token(RPAREN, ")"),
-            ExpectedToken::new_token(LBRACE, "{"),
-            ExpectedToken::new_token(RETURN, "return"),
-            ExpectedToken::new_token(TRUE, "true"),
-            ExpectedToken::new_token(SEMICOLON, ";"),
-            ExpectedToken::new_token(RBRACE, "}"),
-            ExpectedToken::new_token(ELSE, "else"),
-            ExpectedToken::new_token(LBRACE, "{"),
-            ExpectedToken::new_token(RETURN, "return"),
-            ExpectedToken::new_token(FALSE, "false"),
-            ExpectedToken::new_token(SEMICOLON, ";"),
-            ExpectedToken::new_token(RBRACE, "}"),
-            ExpectedToken::new_token(INT, "10"),
-            ExpectedToken::new_token(EQ, "=="),
-            ExpectedToken::new_token(INT, "10"),
-            ExpectedToken::new_token(SEMICOLON, ";"),
-            ExpectedToken::new_token(INT, "10"),
-            ExpectedToken::new_token(NOT_EQ, "!="),
-            ExpectedToken::new_token(INT, "9"),
-            ExpectedToken::new_token(SEMICOLON, ";"),
-            ExpectedToken::new_token(EOF, ""),
+            ExpectedToken::new_token(Let, "let"),
+            ExpectedToken::new_token(Ident, "five"),
+            ExpectedToken::new_token(Assign, "="),
+            ExpectedToken::new_token(Int, "5"),
+            ExpectedToken::new_token(Semicolon, ";"),
+            ExpectedToken::new_token(Let, "let"),
+            ExpectedToken::new_token(Ident, "ten"),
+            ExpectedToken::new_token(Assign, "="),
+            ExpectedToken::new_token(Int, "10"),
+            ExpectedToken::new_token(Semicolon, ";"),
+            ExpectedToken::new_token(Let, "let"),
+            ExpectedToken::new_token(Ident, "add"),
+            ExpectedToken::new_token(Assign, "="),
+            ExpectedToken::new_token(Function, "fn"),
+            ExpectedToken::new_token(Lparen, "("),
+            ExpectedToken::new_token(Ident, "x"),
+            ExpectedToken::new_token(Comma, ","),
+            ExpectedToken::new_token(Ident, "y"),
+            ExpectedToken::new_token(Rparen, ")"),
+            ExpectedToken::new_token(Lbrace, "{"),
+            ExpectedToken::new_token(Ident, "x"),
+            ExpectedToken::new_token(Plus, "+"),
+            ExpectedToken::new_token(Ident, "y"),
+            ExpectedToken::new_token(Semicolon, ";"),
+            ExpectedToken::new_token(Rbrace, "}"),
+            ExpectedToken::new_token(Semicolon, ";"),
+            ExpectedToken::new_token(Let, "let"),
+            ExpectedToken::new_token(Ident, "result"),
+            ExpectedToken::new_token(Assign, "="),
+            ExpectedToken::new_token(Ident, "add"),
+            ExpectedToken::new_token(Lparen, "("),
+            ExpectedToken::new_token(Ident, "five"),
+            ExpectedToken::new_token(Comma, ","),
+            ExpectedToken::new_token(Ident, "ten"),
+            ExpectedToken::new_token(Rparen, ")"),
+            ExpectedToken::new_token(Semicolon, ";"),
+            ExpectedToken::new_token(Bang, "!"),
+            ExpectedToken::new_token(Minus, "-"),
+            ExpectedToken::new_token(Slash, "/"),
+            ExpectedToken::new_token(Asterisk, "*"),
+            ExpectedToken::new_token(Int, "5"),
+            ExpectedToken::new_token(Semicolon, ";"),
+            ExpectedToken::new_token(Int, "5"),
+            ExpectedToken::new_token(Lt, "<"),
+            ExpectedToken::new_token(Int, "10"),
+            ExpectedToken::new_token(Gt, ">"),
+            ExpectedToken::new_token(Int, "5"),
+            ExpectedToken::new_token(Semicolon, ";"),
+            ExpectedToken::new_token(If, "if"),
+            ExpectedToken::new_token(Lparen, "("),
+            ExpectedToken::new_token(Int, "5"),
+            ExpectedToken::new_token(Lt, "<"),
+            ExpectedToken::new_token(Int, "10"),
+            ExpectedToken::new_token(Rparen, ")"),
+            ExpectedToken::new_token(Lbrace, "{"),
+            ExpectedToken::new_token(Return, "return"),
+            ExpectedToken::new_token(True, "true"),
+            ExpectedToken::new_token(Semicolon, ";"),
+            ExpectedToken::new_token(Rbrace, "}"),
+            ExpectedToken::new_token(Else, "else"),
+            ExpectedToken::new_token(Lbrace, "{"),
+            ExpectedToken::new_token(Return, "return"),
+            ExpectedToken::new_token(False, "false"),
+            ExpectedToken::new_token(Semicolon, ";"),
+            ExpectedToken::new_token(Rbrace, "}"),
+            ExpectedToken::new_token(Int, "10"),
+            ExpectedToken::new_token(Equal, "=="),
+            ExpectedToken::new_token(Int, "10"),
+            ExpectedToken::new_token(Semicolon, ";"),
+            ExpectedToken::new_token(Int, "10"),
+            ExpectedToken::new_token(NotEqual, "!="),
+            ExpectedToken::new_token(Int, "9"),
+            ExpectedToken::new_token(Semicolon, ";"),
+            ExpectedToken::new_token(Eof, ""),
         ];
 
         let mut l = Lexer::new(input);

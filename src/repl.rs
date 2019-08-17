@@ -14,7 +14,7 @@ pub fn start() {
 
         let mut lexer = super::lexer::Lexer::new(&buffer);
         let mut tok = lexer.next_token();
-        while tok.token_type.value() != super::token::TokenType::EOF.value() {
+        while tok.token_type.value() != super::token::TokenType::Eof.value() {
             println!("{:?}", tok);
             tok = lexer.next_token();
         }
