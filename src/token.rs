@@ -8,14 +8,14 @@ impl Token {
     pub fn new_token_from_char(token_type: TokenType, literal: Option<char>) -> Self {
         Self {
             token_type,
-            literal: literal.map_or("".to_string(), |v| v.to_string())
+            literal: literal.map_or("".to_string(), |v| v.to_string()),
         }
     }
 
-    pub fn new_token_from_str(token_type: TokenType, literal: String) -> Self {
+    pub fn new_token_from_str(token_type: TokenType, literal: &str) -> Self {
         Self {
             token_type,
-            literal,
+            literal: String::from(literal),
         }
     }
 }
@@ -37,6 +37,12 @@ pub enum TokenType {
     ASTERRISK,
     SLASH,
 
+    LT,
+    GT,
+
+    EQ,
+    NOT_EQ,
+
     // delimiter
     COMMA,
     SEMICOLON,
@@ -49,6 +55,11 @@ pub enum TokenType {
     // keyword
     FUNCTION,
     LET,
+    TRUE,
+    FALSE,
+    IF,
+    ELSE,
+    RETURN,
 }
 
 impl TokenType {
@@ -65,6 +76,10 @@ impl TokenType {
             BANG => "!",
             ASTERRISK => "*",
             SLASH => "/",
+            LT => "<",
+            GT => ">",
+            EQ => "==",
+            NOT_EQ => "!=",
             COMMA => ",",
             SEMICOLON => ";",
             LPAREN => "(",
@@ -73,6 +88,11 @@ impl TokenType {
             RBRACE => "}",
             FUNCTION => "FUNCTION",
             LET => "LET",
+            TRUE => "TRUE",
+            FALSE => "FALSE",
+            IF => "IF",
+            ELSE => "ELSE",
+            RETURN => "RETURN",
         }
     }
 
@@ -80,6 +100,11 @@ impl TokenType {
         match ident {
             "fn" => TokenType::FUNCTION,
             "let" => TokenType::LET,
+            "true" => TokenType::TRUE,
+            "false" => TokenType::FALSE,
+            "if" => TokenType::IF,
+            "else" => TokenType::ELSE,
+            "return" => TokenType::RETURN,
             _ => TokenType::IDENT,
         }
     }

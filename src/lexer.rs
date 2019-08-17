@@ -33,12 +33,32 @@ impl Lexer {
         // TODO: early returnのための対応をスマートにする
         let mut ret = false;
         let tok = match self.ch {
-            Some('=') => Token::new_token_from_char(ASSIGN, self.ch),
+            Some('=') => {
+                if let Some('=') = self.peek_char() {
+                    self.read_char();
+                    Token::new_token_from_str(EQ, "==")
+                } else {
+                    Token::new_token_from_char(ASSIGN, self.ch)
+                }
+            }
             Some(';') => Token::new_token_from_char(SEMICOLON, self.ch),
             Some('(') => Token::new_token_from_char(LPAREN, self.ch),
             Some(')') => Token::new_token_from_char(RPAREN, self.ch),
             Some(',') => Token::new_token_from_char(COMMA, self.ch),
             Some('+') => Token::new_token_from_char(PLUS, self.ch),
+            Some('-') => Token::new_token_from_char(MINUS, self.ch),
+            Some('!') => {
+                if let Some('=') = self.peek_char() {
+                    self.read_char();
+                    Token::new_token_from_str(NOT_EQ, "!=")
+                } else {
+                    Token::new_token_from_char(BANG, self.ch)
+                }
+            },
+            Some('*') => Token::new_token_from_char(ASTERRISK, self.ch),
+            Some('/') => Token::new_token_from_char(SLASH, self.ch),
+            Some('<') => Token::new_token_from_char(LT, self.ch),
+            Some('>') => Token::new_token_from_char(GT, self.ch),
             Some('{') => Token::new_token_from_char(LBRACE, self.ch),
             Some('}') => Token::new_token_from_char(RBRACE, self.ch),
             None => Token::new_token_from_char(EOF, self.ch),
@@ -46,17 +66,19 @@ impl Lexer {
                 if is_letter(self.ch) {
                     ret = true;
                     let literal = self.read_identifer();
-                    Token::new_token_from_str(TokenType::lookup_iden(&literal), literal)
+                    Token::new_token_from_str(TokenType::lookup_iden(&literal), &literal)
                 } else if is_digit(self.ch) {
                     ret = true;
-                    Token::new_token_from_str(INT, self.read_number())
+                    Token::new_token_from_str(INT, &self.read_number())
                 } else {
                     Token::new_token_from_char(ILLEGAL, self.ch)
                 }
             }
         };
 
-        if ret { return tok };
+        if ret {
+            return tok;
+        };
         self.read_char();
         tok
     }
@@ -81,6 +103,10 @@ impl Lexer {
             self.read_char();
         }
         self.input[position..self.position].into_iter().collect()
+    }
+
+    fn peek_char(&self) -> Option<char> {
+        self.input.get(self.read_position).map(|v| *v)
     }
 }
 
@@ -116,7 +142,8 @@ mod tests {
         use super::token::TokenType::*;
         use super::*;
 
-        let input = "let five = 5;
+        let input = "
+let five = 5;
 let ten = 10;
 
 let add = fn(x, y) {
@@ -124,6 +151,17 @@ let add = fn(x, y) {
 };
 
 let result = add(five, ten);
+!-/*5;
+5 < 10 > 5;
+
+if (5 < 10) {
+    return true;
+} else {
+    return false;
+}
+
+10 == 10;
+10 != 9;
 ";
         let tests = [
             ExpectedToken::new_token(LET, "let"),
@@ -161,6 +199,43 @@ let result = add(five, ten);
             ExpectedToken::new_token(COMMA, ","),
             ExpectedToken::new_token(IDENT, "ten"),
             ExpectedToken::new_token(RPAREN, ")"),
+            ExpectedToken::new_token(SEMICOLON, ";"),
+            ExpectedToken::new_token(BANG, "!"),
+            ExpectedToken::new_token(MINUS, "-"),
+            ExpectedToken::new_token(SLASH, "/"),
+            ExpectedToken::new_token(ASTERRISK, "*"),
+            ExpectedToken::new_token(INT, "5"),
+            ExpectedToken::new_token(SEMICOLON, ";"),
+            ExpectedToken::new_token(INT, "5"),
+            ExpectedToken::new_token(LT, "<"),
+            ExpectedToken::new_token(INT, "10"),
+            ExpectedToken::new_token(GT, ">"),
+            ExpectedToken::new_token(INT, "5"),
+            ExpectedToken::new_token(SEMICOLON, ";"),
+            ExpectedToken::new_token(IF, "if"),
+            ExpectedToken::new_token(LPAREN, "("),
+            ExpectedToken::new_token(INT, "5"),
+            ExpectedToken::new_token(LT, "<"),
+            ExpectedToken::new_token(INT, "10"),
+            ExpectedToken::new_token(RPAREN, ")"),
+            ExpectedToken::new_token(LBRACE, "{"),
+            ExpectedToken::new_token(RETURN, "return"),
+            ExpectedToken::new_token(TRUE, "true"),
+            ExpectedToken::new_token(SEMICOLON, ";"),
+            ExpectedToken::new_token(RBRACE, "}"),
+            ExpectedToken::new_token(ELSE, "else"),
+            ExpectedToken::new_token(LBRACE, "{"),
+            ExpectedToken::new_token(RETURN, "return"),
+            ExpectedToken::new_token(FALSE, "false"),
+            ExpectedToken::new_token(SEMICOLON, ";"),
+            ExpectedToken::new_token(RBRACE, "}"),
+            ExpectedToken::new_token(INT, "10"),
+            ExpectedToken::new_token(EQ, "=="),
+            ExpectedToken::new_token(INT, "10"),
+            ExpectedToken::new_token(SEMICOLON, ";"),
+            ExpectedToken::new_token(INT, "10"),
+            ExpectedToken::new_token(NOT_EQ, "!="),
+            ExpectedToken::new_token(INT, "9"),
             ExpectedToken::new_token(SEMICOLON, ";"),
             ExpectedToken::new_token(EOF, ""),
         ];
