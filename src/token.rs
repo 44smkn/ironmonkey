@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Token {
     pub token_type: TokenType,
     pub literal: String,
@@ -20,7 +20,16 @@ impl Token {
     }
 }
 
-#[derive(Debug)]
+impl Default for Token {
+    fn default() -> Self {
+        Token {
+            token_type: TokenType::Illegal,
+            literal: String::new(),
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
 pub enum TokenType {
     Illegal, // UNKNOWN TOKEN OR STRING
     Eof,     // END OF FILE

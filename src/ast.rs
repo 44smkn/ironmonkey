@@ -1,13 +1,13 @@
 use super::token::Token;
 
-trait Node {
+pub trait Node {
     fn token_literal(&self) -> String;
 }
 
 trait Statement {}
 trait Expression {}
 
-struct Program<T: Node> {
+pub struct Program<T: Node> {
     statements: Vec<T>,
 }
 
@@ -20,7 +20,7 @@ impl<T: Node> Node for Program<T> {
 }
 
 struct LetStatement<'a> {
-    token: Token,
+    token: Token, // LET token
     name: &'a Identifer,
     value: Node,
 }
@@ -33,7 +33,7 @@ impl<'a> Node for LetStatement<'a> {
 }
 
 struct Identifer {
-    token: Token,
+    token: Token, // Ident token
     value: String,
 }
 
