@@ -1,7 +1,7 @@
 use super::token;
 
 #[derive(Default, Debug)]
-struct Lexer {
+pub struct Lexer {
     input: Vec<char>,
     position: usize,      // 現在検査中のchの位置を指し示す
     read_position: usize, // 入力における「次の」位置を指し示す
@@ -9,7 +9,7 @@ struct Lexer {
 }
 
 impl Lexer {
-    fn new(input: &str) -> Self {
+    pub fn new(input: &str) -> Self {
         let mut lexer = Self {
             input: input.chars().collect(),
             ..Default::default()
@@ -24,7 +24,7 @@ impl Lexer {
         self.read_position += 1;
     }
 
-    fn next_token(&mut self) -> token::Token {
+    pub fn next_token(&mut self) -> token::Token {
         use token::TokenType::*;
         use token::*;
 
