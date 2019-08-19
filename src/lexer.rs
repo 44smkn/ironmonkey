@@ -19,7 +19,7 @@ impl Lexer {
     }
 
     fn read_char(&mut self) {
-        self.ch = self.input.get(self.read_position).map(|ch| *ch);
+        self.ch = self.input.get(self.read_position).cloned();
         self.position = self.read_position;
         self.read_position += 1;
     }
@@ -91,7 +91,7 @@ impl Lexer {
 
     fn read_identifer(&mut self) -> String {
         let position = self.position;
-        while is_letter(self.ch) {
+        while self.ch.map_or(false, is_letter) {
             self.read_char();
         }
         self.input[position..self.position].into_iter().collect()
@@ -99,24 +99,21 @@ impl Lexer {
 
     fn read_number(&mut self) -> String {
         let position = self.position;
-        while is_digit(self.ch) {
+        while self.ch.map_or(false, char::is_ascii_digit){
             self.read_char();
         }
         self.input[position..self.position].into_iter().collect()
     }
 
     fn peek_char(&self) -> Option<char> {
-        self.input.get(self.read_position).map(|v| *v)
+        self.input.get(self.read_position).cloned()
     }
 }
 
-fn is_letter(ch: Option<char>) -> bool {
-    ch.map_or(false, |v| v.is_ascii_alphabetic() || v == '_')
+fn is_letter(ch: char) -> bool {
+    ch.is_ascii_alphabetic() || ch == '_'
 }
 
-fn is_digit(ch: Option<char>) -> bool {
-    ch.as_ref().map_or(false, char::is_ascii_digit)
-}
 
 #[cfg(test)]
 mod tests {
