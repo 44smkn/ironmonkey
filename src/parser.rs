@@ -31,3 +31,11 @@ impl<'a> Parser<'a> {
         unimplemented!();
     }
 }
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn let_statement() {
+        unimplemented!();
+    }
+}
