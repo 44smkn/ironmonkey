@@ -15,7 +15,7 @@ impl<T: Node> Node for Program<T> {
     fn token_literal(&self) -> String {
         self.statements
             .get(0)
-            .map_or(String::new(), |v| v.token_literal())
+            .map_or(String::new(), Node::token_literal)
     }
 }
 
