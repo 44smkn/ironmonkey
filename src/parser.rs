@@ -1,4 +1,4 @@
-use super::ast::{LetStatement, Node, Program};
+use super::ast::{Identifer, Node, Program, Statement};
 use super::lexer::Lexer;
 use super::token::Token;
 
@@ -46,7 +46,7 @@ let foobar = 838383;
         let lexer = Lexer::new(input);
         let parser = Parser::new(lexer);
 
-        let program: Program<LetStatement> = parser
+        let program: Program<Statement<Identifer>> = parser
             .parse_program()
             .expect("parse_program(&self) returned None");
     }
