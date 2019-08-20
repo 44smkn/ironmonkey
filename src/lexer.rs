@@ -63,11 +63,11 @@ impl Lexer {
             Some('}') => Token::new_token_from_char(Rbrace, self.ch),
             None => Token::new_token_from_char(Eof, self.ch),
             _ => {
-                if is_letter(self.ch) {
+                if self.ch.map_or(false, is_letter) {
                     ret = true;
                     let literal = self.read_identifer();
                     Token::new_token_from_str(TokenType::lookup_iden(&literal), &literal)
-                } else if is_digit(self.ch) {
+                } else if self.ch.as_ref().map_or(false, char::is_ascii_digit) {
                     ret = true;
                     Token::new_token_from_str(Int, &self.read_number())
                 } else {
@@ -99,7 +99,7 @@ impl Lexer {
 
     fn read_number(&mut self) -> String {
         let position = self.position;
-        while self.ch.map_or(false, char::is_ascii_digit){
+        while self.ch.as_ref().map_or(false, char::is_ascii_digit){
             self.read_char();
         }
         self.input[position..self.position].into_iter().collect()

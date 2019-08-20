@@ -19,14 +19,14 @@ impl<T: Node> Node for Program<T> {
     }
 }
 
-struct LetStatement<'a> {
+pub struct LetStatement {
     token: Token, // LET token
-    name: &'a Identifer,
+    name: Identifer,
     value: Node,
 }
 
-impl<'a> Statement for LetStatement<'a> {}
-impl<'a> Node for LetStatement<'a> {
+impl Statement for LetStatement {}
+impl Node for LetStatement {
     fn token_literal(&self) -> String {
         String::from(&self.token.literal)
     }

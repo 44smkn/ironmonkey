@@ -1,17 +1,17 @@
-use super::ast::Program;
+use super::ast::{LetStatement, Node, Program};
 use super::lexer::Lexer;
 use super::token::Token;
 
 #[derive(Debug)]
-struct Parser<'a> {
-    lexer: &'a mut Lexer,
+struct Parser {
+    lexer: Lexer,
 
     cur_token: Token,
     peek_token: Token,
 }
 
-impl<'a> Parser<'a> {
-    fn new(lexer: &'a mut Lexer) -> Self {
+impl Parser {
+    fn new(lexer: Lexer) -> Self {
         let mut parser = Parser {
             lexer,
             cur_token: Default::default(),
@@ -27,15 +27,27 @@ impl<'a> Parser<'a> {
         self.peek_token = self.lexer.next_token();
     }
 
-    fn parse_program(&self) -> Program {
-        unimplemented!();
+    fn parse_program<T: Node>(&self) -> Option<Program<T>> {
+        None
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use super::super::lexer::Lexer;
+    use super::*;
     #[test]
     fn let_statement() {
-        unimplemented!();
+        let input = "
+let x = 5;
+let y = 10;
+let foobar = 838383;
+";
+        let lexer = Lexer::new(input);
+        let parser = Parser::new(lexer);
+
+        let program: Program<LetStatement> = parser
+            .parse_program()
+            .expect("parse_program(&self) returned None");
     }
 }
