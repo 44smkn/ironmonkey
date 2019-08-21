@@ -1,32 +1,48 @@
 use super::token::Token;
 
+pub enum StatementType {
+    LetStatement(LetStatement),
+}
+
+impl Node for StatementType {
+    fn token_literal(&self) -> String {
+        match self {
+            StatementType::LetStatement(statement) => statement.token_literal(),
+        }
+    }
+}
+
+impl Node for ExpressionType {
+    fn token_literal(&self) -> String {
+        match self {
+            ExpressionType::Identifer(expression) => expression.token_literal(),
+        }
+    }
+}
+
+pub enum ExpressionType {
+    Identifer(Identifer),
+}
+
 pub trait Node {
     fn token_literal(&self) -> String;
 }
 
-pub trait Statement {}
-pub trait Expression {}
+pub type Program = Vec<StatementType>;
 
-pub struct Program<T: Node> {
-    statements: Vec<T>,
-}
-
-impl<T: Node> Node for Program<T> {
+impl Node for Program {
     fn token_literal(&self) -> String {
-        self.statements
-            .get(0)
-            .map_or(String::new(), Node::token_literal)
+        self.get(0).map_or(String::new(), Node::token_literal)
     }
 }
 
-pub struct LetStatement<T: Expression> {
+pub struct LetStatement {
     token: Token, // LET token
     name: Identifer,
-    value: T,
+    value: ExpressionType,
 }
 
-impl<T: Expression> Statement for LetStatement<T> {}
-impl<T: Expression> Node for LetStatement<T> {
+impl Node for LetStatement {
     fn token_literal(&self) -> String {
         String::from(&self.token.literal)
     }
@@ -37,7 +53,6 @@ pub struct Identifer {
     value: String,
 }
 
-impl Expression for Identifer {}
 impl Node for Identifer {
     fn token_literal(&self) -> String {
         String::from(&self.token.literal)

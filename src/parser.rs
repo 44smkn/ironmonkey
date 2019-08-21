@@ -1,4 +1,4 @@
-use super::ast::{Identifer, Node, Program, Statement};
+use super::ast::{Identifer, LetStatement, Node, Program};
 use super::lexer::Lexer;
 use super::token::Token;
 
@@ -27,8 +27,8 @@ impl Parser {
         self.peek_token = self.lexer.next_token();
     }
 
-    fn parse_program<T: Node>(&self) -> Option<Program<T>> {
-        None
+    fn parse_program(&self) -> Program {
+        vec![]
     }
 }
 
@@ -46,8 +46,6 @@ let foobar = 838383;
         let lexer = Lexer::new(input);
         let parser = Parser::new(lexer);
 
-        let program: Program<Statement<Identifer>> = parser
-            .parse_program()
-            .expect("parse_program(&self) returned None");
+        let program: Program = parser.parse_program();
     }
 }
