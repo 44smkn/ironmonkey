@@ -34,6 +34,7 @@ impl Parser {
 
 #[cfg(test)]
 mod tests {
+    use super::super::ast::StatementType;
     use super::super::lexer::Lexer;
     use super::*;
 
@@ -57,14 +58,17 @@ let foobar = 838383;
 
         let tests = vec!["x", "y", "foobar"];
         for (i, tt) in tests.iter().enumerate() {
-            let stmt = program.get(i)
-            if !test_let_statement(){
-                return
+            let stmt = &program[i];
+            if !test_let_statement(stmt, tt) {
+                return;
             }
         }
     }
 
-    fn test_let_statement(s: Statement, name: String){
-        not_imeplemented!()
+    fn test_let_statement(s: &StatementType, name: &str) -> bool {
+        if *s.token_reteral() != "let" {
+            panic!("s.token_literal not 'let'. got={}", s.token_literal());
+        }
+        false
     }
 }
