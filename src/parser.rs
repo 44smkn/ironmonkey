@@ -36,6 +36,7 @@ impl Parser {
 mod tests {
     use super::super::lexer::Lexer;
     use super::*;
+
     #[test]
     fn let_statement() {
         let input = "
@@ -47,5 +48,23 @@ let foobar = 838383;
         let parser = Parser::new(lexer);
 
         let program: Program = parser.parse_program();
+        if program.len() != 3 {
+            panic!(
+                "program does not contain 3 statements. got={}",
+                program.len()
+            )
+        }
+
+        let tests = vec!["x", "y", "foobar"];
+        for (i, tt) in tests.iter().enumerate() {
+            let stmt = program.get(i)
+            if !test_let_statement(){
+                return
+            }
+        }
+    }
+
+    fn test_let_statement(s: Statement, name: String){
+        not_imeplemented!()
     }
 }
