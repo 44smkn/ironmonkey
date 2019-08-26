@@ -66,7 +66,7 @@ let foobar = 838383;
     }
 
     fn test_let_statement(s: &StatementType, name: &str) -> bool {
-        if *s.token_reteral() != "let" {
+        if s.token_literal() != "let" {
             panic!("s.token_literal not 'let'. got={}", s.token_literal());
         }
         false
