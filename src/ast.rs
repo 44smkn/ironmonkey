@@ -38,7 +38,7 @@ impl Node for Program {
 
 pub struct LetStatement {
     token: Token, // LET token
-    name: Identifer,
+    pub name: Identifer,
     value: ExpressionType,
 }
 
@@ -50,7 +50,7 @@ impl Node for LetStatement {
 
 pub struct Identifer {
     token: Token, // Ident token
-    value: String,
+    pub value: String,
 }
 
 impl Node for Identifer {

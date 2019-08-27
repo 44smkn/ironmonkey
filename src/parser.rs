@@ -38,7 +38,7 @@ mod tests {
     use super::super::lexer::Lexer;
     use super::*;
 
-    // #[test]
+    #[test]
     fn let_statement() {
         let input = "
 let x = 5;
@@ -49,26 +49,27 @@ let foobar = 838383;
         let parser = Parser::new(lexer);
 
         let program: Program = parser.parse_program();
-        if program.len() != 3 {
-            panic!(
-                "program does not contain 3 statements. got={}",
-                program.len()
-            )
-        }
+
+        assert_eq!(
+            program.len(),
+            3,
+            "program does not contain 3 statements. got={}",
+            program.len()
+        );
 
         let tests = vec!["x", "y", "foobar"];
-        for (i, tt) in tests.iter().enumerate() {
-            let stmt = &program[i];
-            if !test_let_statement(stmt, tt) {
-                return;
-            }
+        for (expected_identifier, statement) in tests.into_iter().zip(program.iter()) {
+            assert_eq!(
+                statement.token_literal(),
+                "let",
+                "statement.token_literal not 'let'. got={}",
+                statement.token_literal()
+            );
+            let statement = match statement {
+                StatementType::LetStatement(statement) => statement,
+            };
+            assert_eq!(statement.name.value, expected_identifier);
+            assert_eq!(statement.name.token_literal(), expected_identifier);
         }
-    }
-
-    fn test_let_statement(s: &StatementType, name: &str) -> bool {
-        if s.token_literal() != "let" {
-            panic!("s.token_literal not 'let'. got={}", s.token_literal());
-        }
-        false
     }
 }
