@@ -1,6 +1,6 @@
-use super::ast::{Identifer, LetStatement, Node, Program};
+use super::ast::{Identifer, LetStatement, Node, Program, StatementType};
 use super::lexer::Lexer;
-use super::token::Token;
+use super::token::{Token, TokenType};
 
 #[derive(Debug)]
 struct Parser {
@@ -27,8 +27,17 @@ impl Parser {
         self.peek_token = self.lexer.next_token();
     }
 
-    fn parse_program(&self) -> Program {
-        vec![]
+    fn parse_program(&mut self) -> Program {
+        let mut program = Vec::new();
+        while self.cur_token.token_type != TokenType::Eof {
+            program.push(self.parse_statement());
+            self.next_token();
+        }
+        program
+    }
+
+    fn parse_statement(&self) -> StatementType {
+        unimplemented!();
     }
 }
 
@@ -46,7 +55,7 @@ let y = 10;
 let foobar = 838383;
 ";
         let lexer = Lexer::new(input);
-        let parser = Parser::new(lexer);
+        let mut parser = Parser::new(lexer);
 
         let program: Program = parser.parse_program();
 
