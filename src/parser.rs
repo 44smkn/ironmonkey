@@ -1,13 +1,14 @@
-use super::ast::{Identifer, LetStatement, Node, Program, StatementType};
+use super::ast::{Identifer, LetStatement, Node, Program, StatementType, ExpressionType};
 use super::lexer::Lexer;
 use super::token::{Token, TokenType};
+use std::mem;
 
 #[derive(Debug)]
 struct Parser {
     lexer: Lexer,
 
-    cur_token: Token,
-    peek_token: Token,
+    cur_token: Option<Token>,
+    peek_token: Option<Token>,
 }
 
 impl Parser {
@@ -23,21 +24,65 @@ impl Parser {
     }
 
     fn next_token(&mut self) {
-        self.cur_token = self.peek_token.clone();
-        self.peek_token = self.lexer.next_token();
+        self.cur_token = mem::replace(&mut self.peek_token, None);
+        self.peek_token = Some(self.lexer.next_token());
+    }
+
+    fn expect_peek(&mut self, token: TokenType) -> bool {
+        if self.peek_token_is(token) {
+            self.next_token();
+            true
+        } else {
+            false
+        }
+    }
+
+    fn peek_token_is(&mut self, token: TokenType) -> bool {
+        mem::replace(&mut self.peek_token, None).map_or(false, |v| v.token_type == token)
+    }
+
+    fn cur_token_is(&mut self, token:TokenType) -> bool {
+        mem::replace(&mut self.cur_token, None).map_or(false, |v| v.token_type == token)
     }
 
     fn parse_program(&mut self) -> Program {
         let mut program = Vec::new();
-        while self.cur_token.token_type != TokenType::Eof {
+        while mem::replace(&mut self.cur_token, None).map_or(true, |v| v.token_type != TokenType::Eof) {
             program.push(self.parse_statement());
             self.next_token();
         }
         program
     }
 
-    fn parse_statement(&self) -> StatementType {
-        unimplemented!();
+    fn parse_statement(&mut self) -> StatementType {
+        match mem::replace(&mut self.cur_token, None).map_or(TokenType::Illegal, |v| v.token_type) {
+            TokenType::Let => self.parse_let_statement(),
+            _ => StatementType::Illegal,
+        }
+    }
+
+    fn parse_let_statement(&mut self) -> StatementType {
+        if !self.expect_peek(TokenType::Ident) || !self.expect_peek(TokenType::Assign) {
+            return StatementType::Illegal;
+        }
+
+
+        let ident = Identifer {
+                token: mem::replace(&mut self.cur_token, None).unwrap(),
+                value: mem::replace(&mut self.cur_token, None).map_or(String::new(), |v| v.literal),
+        };
+        let statement = LetStatement{
+            token: mem::replace(&mut self.cur_token, None).unwrap(),
+            name: ident.clone(),
+            value: ExpressionType::Identifer(ident),
+        };
+
+        while self.cur_token_is(TokenType::Semicolon){
+            self.next_token();
+        }
+
+        StatementType::LetStatement(statement)
+
     }
 }
 
@@ -76,6 +121,7 @@ let foobar = 838383;
             );
             let statement = match statement {
                 StatementType::LetStatement(statement) => statement,
+                _ => panic!("fail"),
             };
             assert_eq!(statement.name.value, expected_identifier);
             assert_eq!(statement.name.token_literal(), expected_identifier);

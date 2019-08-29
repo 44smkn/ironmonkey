@@ -2,12 +2,14 @@ use super::token::Token;
 
 pub enum StatementType {
     LetStatement(LetStatement),
+    Illegal,
 }
 
 impl Node for StatementType {
     fn token_literal(&self) -> String {
         match self {
             StatementType::LetStatement(statement) => statement.token_literal(),
+            StatementType::Illegal => String::from("Illegal"),
         }
     }
 }
@@ -37,9 +39,9 @@ impl Node for Program {
 }
 
 pub struct LetStatement {
-    token: Token, // LET token
+    pub token: Token, // LET token
     pub name: Identifer,
-    value: ExpressionType,
+    pub value: ExpressionType,
 }
 
 impl Node for LetStatement {
@@ -48,8 +50,9 @@ impl Node for LetStatement {
     }
 }
 
+#[derive(Clone)]
 pub struct Identifer {
-    token: Token, // Ident token
+    pub token: Token, // Ident token
     pub value: String,
 }
 
