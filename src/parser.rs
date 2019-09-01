@@ -1,4 +1,4 @@
-use super::ast::{Identifer, LetStatement, Node, Program, StatementType, ExpressionType};
+use super::ast::{ExpressionType, Identifer, LetStatement, Node, Program, StatementType};
 use super::lexer::Lexer;
 use super::token::{Token, TokenType};
 use std::mem;
@@ -41,13 +41,15 @@ impl Parser {
         mem::replace(&mut self.peek_token, None).map_or(false, |v| v.token_type == token)
     }
 
-    fn cur_token_is(&mut self, token:TokenType) -> bool {
+    fn cur_token_is(&mut self, token: TokenType) -> bool {
         mem::replace(&mut self.cur_token, None).map_or(false, |v| v.token_type == token)
     }
 
     fn parse_program(&mut self) -> Program {
         let mut program = Vec::new();
-        while mem::replace(&mut self.cur_token, None).map_or(true, |v| v.token_type != TokenType::Eof) {
+        while mem::replace(&mut self.cur_token, None)
+            .map_or(true, |v| v.token_type != TokenType::Eof)
+        {
             program.push(self.parse_statement());
             self.next_token();
         }
@@ -66,23 +68,21 @@ impl Parser {
             return StatementType::Illegal;
         }
 
-
         let ident = Identifer {
-                token: mem::replace(&mut self.cur_token, None).unwrap(),
-                value: mem::replace(&mut self.cur_token, None).map_or(String::new(), |v| v.literal),
+            token: mem::replace(&mut self.cur_token, None).unwrap(),
+            value: mem::replace(&mut self.cur_token, None).map_or(String::new(), |v| v.literal),
         };
-        let statement = LetStatement{
+        let statement = LetStatement {
             token: mem::replace(&mut self.cur_token, None).unwrap(),
             name: ident.clone(),
             value: ExpressionType::Identifer(ident),
         };
 
-        while self.cur_token_is(TokenType::Semicolon){
+        while self.cur_token_is(TokenType::Semicolon) {
             self.next_token();
         }
 
         StatementType::LetStatement(statement)
-
     }
 }
 
@@ -100,6 +100,7 @@ let y = 10;
 let foobar = 838383;
 ";
         let lexer = Lexer::new(input);
+        println!("{}", lexer);
         let mut parser = Parser::new(lexer);
 
         let program: Program = parser.parse_program();

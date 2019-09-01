@@ -1,4 +1,5 @@
 use super::token;
+use std::{mem, fmt};
 
 #[derive(Default, Debug)]
 pub struct Lexer {
@@ -107,6 +108,12 @@ impl Lexer {
 
     fn peek_char(&self) -> Option<char> {
         self.input.get(self.read_position).cloned()
+    }
+}
+
+impl fmt::Display for Lexer {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "input: {}\ncurrent: {}\n", &mut self.input.iter().collect::<String>(), self.ch.unwrap().to_string())
     }
 }
 
