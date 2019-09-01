@@ -39,7 +39,7 @@ impl Node for Program {
 }
 
 pub struct LetStatement {
-    pub token: Token, // LET token
+    pub token: Box<Token>, // LET token
     pub name: Identifer,
     pub value: ExpressionType,
 }
@@ -52,7 +52,7 @@ impl Node for LetStatement {
 
 #[derive(Clone)]
 pub struct Identifer {
-    pub token: Token, // Ident token
+    pub token: Box<Token>, // Ident token
     pub value: String,
 }
 

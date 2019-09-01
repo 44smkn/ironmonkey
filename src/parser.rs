@@ -7,8 +7,8 @@ use std::mem;
 struct Parser {
     lexer: Lexer,
 
-    cur_token: Option<Token>,
-    peek_token: Option<Token>,
+    cur_token: Option<Box<Token>>,
+    peek_token: Option<Box<Token>>,
 }
 
 impl Parser {
@@ -25,7 +25,7 @@ impl Parser {
 
     fn next_token(&mut self) {
         self.cur_token = mem::replace(&mut self.peek_token, None);
-        self.peek_token = Some(self.lexer.next_token());
+        self.peek_token = Some(Box::from(self.lexer.next_token()));
     }
 
     fn expect_peek(&mut self, token: TokenType) -> bool {
