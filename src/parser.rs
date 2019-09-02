@@ -3,7 +3,7 @@ use super::lexer::Lexer;
 use super::token::{Token, TokenType};
 use std::mem;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct Parser {
     lexer: Lexer,
 
@@ -46,18 +46,33 @@ impl Parser {
     }
 
     fn parse_program(&mut self) -> Program {
-        let mut program = Vec::new();
-        while mem::replace(&mut self.cur_token, None)
+        let mut program: Vec<StatementType> = Vec::new();
+        while self
+            .cur_token
+            .clone()
             .map_or(true, |v| v.token_type != TokenType::Eof)
         {
-            program.push(self.parse_statement());
+            let statement = self.parse_statement();
+            match statement {
+                StatementType::Illegal => println!(
+                    "stetement type is illegal.token={}",
+                    self.cur_token
+                        .clone()
+                        .map_or(String::from("None"), |v| v.literal)
+                ),
+                _ => program.push(statement),
+            };
             self.next_token();
         }
         program
     }
 
     fn parse_statement(&mut self) -> StatementType {
-        match mem::replace(&mut self.cur_token, None).map_or(TokenType::Illegal, |v| v.token_type) {
+        match self
+            .cur_token
+            .clone()
+            .map_or(TokenType::Illegal, |v| v.token_type)
+        {
             TokenType::Let => self.parse_let_statement(),
             _ => StatementType::Illegal,
         }
@@ -68,12 +83,13 @@ impl Parser {
             return StatementType::Illegal;
         }
 
+        let cur_token = mem::replace(&mut self.cur_token, None).unwrap_or(Box::new(Token{..Default::default()}));
         let ident = Identifer {
-            token: mem::replace(&mut self.cur_token, None).unwrap(),
+            token: cur_token.clone(),
             value: mem::replace(&mut self.cur_token, None).map_or(String::new(), |v| v.literal),
         };
         let statement = LetStatement {
-            token: mem::replace(&mut self.cur_token, None).unwrap(),
+            token: cur_token,
             name: ident.clone(),
             value: ExpressionType::Identifer(ident),
         };

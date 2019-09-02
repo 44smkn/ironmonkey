@@ -1,7 +1,7 @@
 use super::token;
 use std::{mem, fmt};
 
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Clone)]
 pub struct Lexer {
     input: Vec<char>,
     position: usize,      // 現在検査中のchの位置を指し示す
