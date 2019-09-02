@@ -6,7 +6,7 @@ use std::mem;
 #[derive(Debug, Clone)]
 struct Parser {
     lexer: Lexer,
-
+    errors: Vec<String>,
     cur_token: Option<Box<Token>>,
     peek_token: Option<Box<Token>>,
 }
@@ -15,12 +15,17 @@ impl Parser {
     fn new(lexer: Lexer) -> Self {
         let mut parser = Parser {
             lexer,
+            errors: Vec::new(),
             cur_token: Default::default(),
             peek_token: Default::default(),
         };
         parser.next_token();
         parser.next_token();
         parser
+    }
+
+    fn errors(&self) -> Vec<String> {
+        self.errors.clone()
     }
 
     fn next_token(&mut self) {
@@ -58,6 +63,8 @@ impl Parser {
             .map_or(false, |v| v.token_type == token)
     }
 
+    /// Repeat to read by calling next_token() token until reaching TokenType::Eof.
+    /// Every time it repeats, call parse_statement() that analysis statement.
     fn parse_program(&mut self) -> Program {
         let mut program: Vec<StatementType> = Vec::new();
         while self
@@ -91,6 +98,10 @@ impl Parser {
         }
     }
 
+    /// Construct LetStatement node based on token(LET) what we focus on.
+    /// Provide assertion following tokens and advance a token by calling expect_peek().
+    /// First, I expect TokenType::Ident. It is used for constructing Identifer node.
+    /// Then, I expect equal and jump until semicolon.
     fn parse_let_statement(&mut self) -> StatementType {
         let first_token = self.cur_token.clone().unwrap_or(Box::new(Token {
             ..Default::default()
