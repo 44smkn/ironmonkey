@@ -26,6 +26,15 @@ impl Parser {
     fn next_token(&mut self) {
         self.cur_token = mem::replace(&mut self.peek_token, None);
         self.peek_token = Some(Box::from(self.lexer.next_token()));
+        println!(
+            "cur_token={}, peek_token={}",
+            self.cur_token
+                .clone()
+                .map_or(String::from("None"), |v| v.literal),
+            self.peek_token
+                .clone()
+                .map_or(String::from("None"), |v| v.literal)
+        );
     }
 
     fn expect_peek(&mut self, token: TokenType) -> bool {
@@ -38,11 +47,15 @@ impl Parser {
     }
 
     fn peek_token_is(&mut self, token: TokenType) -> bool {
-        mem::replace(&mut self.peek_token, None).map_or(false, |v| v.token_type == token)
+        self.peek_token
+            .clone()
+            .map_or(false, |v| v.token_type == token)
     }
 
     fn cur_token_is(&mut self, token: TokenType) -> bool {
-        mem::replace(&mut self.cur_token, None).map_or(false, |v| v.token_type == token)
+        self.cur_token
+            .clone()
+            .map_or(false, |v| v.token_type == token)
     }
 
     fn parse_program(&mut self) -> Program {
@@ -79,25 +92,36 @@ impl Parser {
     }
 
     fn parse_let_statement(&mut self) -> StatementType {
-        if !self.expect_peek(TokenType::Ident) || !self.expect_peek(TokenType::Assign) {
+        let first_token = self.cur_token.clone().unwrap_or(Box::new(Token {
+            ..Default::default()
+        }));
+
+        if !self.expect_peek(TokenType::Ident) {
             return StatementType::Illegal;
         }
 
-        let cur_token = mem::replace(&mut self.cur_token, None).unwrap_or(Box::new(Token{..Default::default()}));
+        let second_token = self.cur_token.clone().unwrap_or(Box::new(Token {
+            ..Default::default()
+        }));
         let ident = Identifer {
-            token: cur_token.clone(),
-            value: mem::replace(&mut self.cur_token, None).map_or(String::new(), |v| v.literal),
+            token: second_token.clone(),
+            value: second_token.clone().literal,
         };
         let statement = LetStatement {
-            token: cur_token,
+            token: first_token,
             name: ident.clone(),
             value: ExpressionType::Identifer(ident),
         };
 
-        while self.cur_token_is(TokenType::Semicolon) {
+        if !self.expect_peek(TokenType::Assign) {
+            return StatementType::Illegal;
+        }
+
+        while !self.cur_token_is(TokenType::Semicolon) {
             self.next_token();
         }
 
+        println!("return let statement: {}", statement.token.literal);
         StatementType::LetStatement(statement)
     }
 }
