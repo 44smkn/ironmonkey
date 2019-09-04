@@ -1,3 +1,5 @@
+use std::fmt;
+
 #[derive(Debug, Clone)]
 pub struct Token {
     pub token_type: TokenType,
@@ -116,5 +118,11 @@ impl TokenType {
             "return" => TokenType::Return,
             _ => TokenType::Ident,
         }
+    }
+}
+
+impl fmt::Display for TokenType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "({})", self)
     }
 }

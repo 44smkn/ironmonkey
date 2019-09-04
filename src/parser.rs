@@ -28,6 +28,17 @@ impl Parser {
         self.errors.clone()
     }
 
+    fn peek_error(&mut self, token_type: &TokenType) {
+        let message = format!(
+            "expected next token to be {}, got {} instead",
+            token_type,
+            self.peek_token
+                .clone()
+                .map_or(TokenType::Illegal, |v| v.token_type)
+        );
+        self.errors.push(message);
+    }
+
     fn next_token(&mut self) {
         self.cur_token = mem::replace(&mut self.peek_token, None);
         self.peek_token = Some(Box::from(self.lexer.next_token()));
@@ -43,18 +54,19 @@ impl Parser {
     }
 
     fn expect_peek(&mut self, token: TokenType) -> bool {
-        if self.peek_token_is(token) {
+        if self.peek_token_is(&token) {
             self.next_token();
             true
         } else {
+            self.peek_error(&token);
             false
         }
     }
 
-    fn peek_token_is(&mut self, token: TokenType) -> bool {
+    fn peek_token_is(&mut self, token: &TokenType) -> bool {
         self.peek_token
             .clone()
-            .map_or(false, |v| v.token_type == token)
+            .map_or(false, |v| v.token_type == *token)
     }
 
     fn cur_token_is(&mut self, token: TokenType) -> bool {
@@ -155,6 +167,7 @@ let foobar = 838383;
         let mut parser = Parser::new(lexer);
 
         let program: Program = parser.parse_program();
+        check_parse_errors(&parser);
 
         assert_eq!(
             program.len(),
@@ -178,5 +191,17 @@ let foobar = 838383;
             assert_eq!(statement.name.value, expected_identifier);
             assert_eq!(statement.name.token_literal(), expected_identifier);
         }
+    }
+
+    fn check_parse_errors(parser: &Parser) {
+        let errors = parser.errors();
+        if errors.len() == 0 {
+            return;
+        }
+        println!("parser has {} errors", errors.len());
+        for message in errors {
+            println!("parser error: {}", message);
+        }
+        panic!();
     }
 }
