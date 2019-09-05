@@ -30,7 +30,7 @@ impl Parser {
 
     fn peek_error(&mut self, token_type: &TokenType) {
         let message = format!(
-            "expected next token to be {}, got {} instead",
+            "expected next token to be {:?}, got {:?} instead",
             token_type,
             self.peek_token
                 .clone()
@@ -158,7 +158,7 @@ mod tests {
     #[test]
     fn let_statement() {
         let input = "
-let x = 5;
+let x  5;
 let y = 10;
 let foobar = 838383;
 ";
@@ -202,6 +202,5 @@ let foobar = 838383;
         for message in errors {
             println!("parser error: {}", message);
         }
-        panic!();
     }
 }
