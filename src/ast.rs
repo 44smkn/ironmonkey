@@ -50,6 +50,17 @@ impl Node for LetStatement {
     }
 }
 
+pub struct ReturnStatement {
+    pub token: Box<Token>,
+    pub return_value: ExpressionType,
+}
+
+impl Node for ReturnStatement {
+    fn token_literal(&self) -> String {
+        String::from(&self.token.literal)
+    }
+}
+
 #[derive(Clone)]
 pub struct Identifer {
     pub token: Box<Token>, // Ident token
