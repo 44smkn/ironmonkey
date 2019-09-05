@@ -42,15 +42,6 @@ impl Parser {
     fn next_token(&mut self) {
         self.cur_token = mem::replace(&mut self.peek_token, None);
         self.peek_token = Some(Box::from(self.lexer.next_token()));
-        println!(
-            "cur_token={}, peek_token={}",
-            self.cur_token
-                .clone()
-                .map_or(String::from("None"), |v| v.literal),
-            self.peek_token
-                .clone()
-                .map_or(String::from("None"), |v| v.literal)
-        );
     }
 
     fn expect_peek(&mut self, token: TokenType) -> bool {
@@ -86,12 +77,7 @@ impl Parser {
         {
             let statement = self.parse_statement();
             match statement {
-                StatementType::Illegal => println!(
-                    "stetement type is illegal.token={}",
-                    self.cur_token
-                        .clone()
-                        .map_or(String::from("None"), |v| v.literal)
-                ),
+                StatementType::Illegal => (),
                 _ => program.push(statement),
             };
             self.next_token();
@@ -144,7 +130,6 @@ impl Parser {
             self.next_token();
         }
 
-        println!("return let statement: {}", statement.token.literal);
         StatementType::LetStatement(statement)
     }
 }
@@ -158,12 +143,11 @@ mod tests {
     #[test]
     fn let_statement() {
         let input = "
-let x  5;
+let x = 5;
 let y = 10;
 let foobar = 838383;
 ";
         let lexer = Lexer::new(input);
-        println!("{}", lexer);
         let mut parser = Parser::new(lexer);
 
         let program: Program = parser.parse_program();
