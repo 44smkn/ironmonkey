@@ -187,4 +187,33 @@ let foobar = 838383;
             println!("parser error: {}", message);
         }
     }
+
+    #[test]
+    fn return_statement() {
+        let input = "
+return 5;
+return 10;
+return 993322;
+";
+        let lexer = Lexer::new(input);
+        let mut parser = Parser::new(lexer);
+
+        let program = parser.parse_program();
+        check_parse_errors(&parser);
+
+        assert_eq!(
+            program.len(),
+            3,
+            "program does not contain 3 statements. got={}",
+            program.len()
+        );
+
+        for statement in program {
+            let statement = match statement {
+                StatementType::ReturnStatement(v) => v,
+                _ => panic!("fail"),
+            };
+            assert_eq!(statement.token_literal(), "return");
+        }
+    }
 }
