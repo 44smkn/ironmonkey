@@ -2,6 +2,7 @@ use super::token::Token;
 
 pub enum StatementType {
     LetStatement(LetStatement),
+    ReturnStatement(ReturnStatement),
     Illegal,
 }
 
@@ -9,6 +10,7 @@ impl Node for StatementType {
     fn token_literal(&self) -> String {
         match self {
             StatementType::LetStatement(statement) => statement.token_literal(),
+            StatementType::ReturnStatement(statement) => statement.token_literal(),
             StatementType::Illegal => String::from("Illegal"),
         }
     }
@@ -45,6 +47,17 @@ pub struct LetStatement {
 }
 
 impl Node for LetStatement {
+    fn token_literal(&self) -> String {
+        String::from(&self.token.literal)
+    }
+}
+
+pub struct ReturnStatement {
+    pub token: Box<Token>, // LET token
+    pub value: ExpressionType,
+}
+
+impl Node for ReturnStatement {
     fn token_literal(&self) -> String {
         String::from(&self.token.literal)
     }
