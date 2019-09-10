@@ -30,7 +30,7 @@ impl Parser {
 
     fn peek_error(&mut self, token_type: &TokenType) {
         let message = format!(
-            "expected next token to be {}, got {} instead",
+            "expected next token to be {:?}, got {:?} instead",
             token_type,
             self.peek_token
                 .clone()
@@ -42,15 +42,6 @@ impl Parser {
     fn next_token(&mut self) {
         self.cur_token = mem::replace(&mut self.peek_token, None);
         self.peek_token = Some(Box::from(self.lexer.next_token()));
-        println!(
-            "cur_token={}, peek_token={}",
-            self.cur_token
-                .clone()
-                .map_or(String::from("None"), |v| v.literal),
-            self.peek_token
-                .clone()
-                .map_or(String::from("None"), |v| v.literal)
-        );
     }
 
     fn expect_peek(&mut self, token: TokenType) -> bool {
@@ -86,12 +77,7 @@ impl Parser {
         {
             let statement = self.parse_statement();
             match statement {
-                StatementType::Illegal => println!(
-                    "stetement type is illegal.token={}",
-                    self.cur_token
-                        .clone()
-                        .map_or(String::from("None"), |v| v.literal)
-                ),
+                StatementType::Illegal => (),
                 _ => program.push(statement),
             };
             self.next_token();
@@ -144,7 +130,6 @@ impl Parser {
             self.next_token();
         }
 
-        println!("return let statement: {}", statement.token.literal);
         StatementType::LetStatement(statement)
     }
 }
@@ -163,7 +148,6 @@ let y = 10;
 let foobar = 838383;
 ";
         let lexer = Lexer::new(input);
-        println!("{}", lexer);
         let mut parser = Parser::new(lexer);
 
         let program: Program = parser.parse_program();
@@ -202,6 +186,34 @@ let foobar = 838383;
         for message in errors {
             println!("parser error: {}", message);
         }
-        panic!();
+    }
+
+    #[test]
+    fn return_statement() {
+        let input = "
+return 5;
+return 10;
+return 993322;
+";
+        let lexer = Lexer::new(input);
+        let mut parser = Parser::new(lexer);
+
+        let program = parser.parse_program();
+        check_parse_errors(&parser);
+
+        assert_eq!(
+            program.len(),
+            3,
+            "program does not contain 3 statements. got={}",
+            program.len()
+        );
+
+        for statement in program {
+            let statement = match statement {
+                StatementType::ReturnStatement(v) => v,
+                _ => panic!("fail"),
+            };
+            assert_eq!(statement.token_literal(), "return");
+        }
     }
 }
