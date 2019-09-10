@@ -1,4 +1,6 @@
-use super::ast::{ExpressionType, Identifer, LetStatement, Node, Program, StatementType};
+use super::ast::{
+    ExpressionType, Identifer, LetStatement, Program, ReturnStatement, StatementType,
+};
 use super::lexer::Lexer;
 use super::token::{Token, TokenType};
 use std::mem;
@@ -46,7 +48,6 @@ impl Parser {
 
     fn expect_peek(&mut self, token: TokenType) -> bool {
         if self.peek_token_is(&token) {
-            self.next_token();
             true
         } else {
             self.peek_error(&token);
@@ -101,17 +102,21 @@ impl Parser {
     /// First, I expect TokenType::Ident. It is used for constructing Identifer node.
     /// Then, I expect equal and jump until semicolon.
     fn parse_let_statement(&mut self) -> StatementType {
-        let first_token = self.cur_token.clone().unwrap_or(Box::new(Token {
-            ..Default::default()
-        }));
+        let first_token = match mem::replace(&mut self.cur_token, None) {
+            Some(token) => token,
+            None => panic!("not found current token"),
+        };
 
         if !self.expect_peek(TokenType::Ident) {
             return StatementType::Illegal;
         }
+        self.next_token();
 
-        let second_token = self.cur_token.clone().unwrap_or(Box::new(Token {
-            ..Default::default()
-        }));
+        let second_token = match mem::replace(&mut self.cur_token, None) {
+            Some(token) => token,
+            None => panic!("not found current token"),
+        };
+
         let ident = Identifer {
             token: second_token.clone(),
             value: second_token.clone().literal,
@@ -125,6 +130,7 @@ impl Parser {
         if !self.expect_peek(TokenType::Assign) {
             return StatementType::Illegal;
         }
+        self.next_token();
 
         while !self.cur_token_is(TokenType::Semicolon) {
             self.next_token();
