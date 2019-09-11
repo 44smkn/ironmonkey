@@ -117,13 +117,10 @@ impl Parser {
             None => panic!("not found current token"),
         };
 
-        let ident = Identifer {
-            token: second_token.clone(),
-            value: second_token.clone().literal,
-        };
+        let ident = Identifer::new(second_token);
         let statement = LetStatement {
             token: first_token,
-            name: ident.clone(),
+            name: ident,
             value: ExpressionType::Identifer(ident),
         };
 

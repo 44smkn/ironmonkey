@@ -63,10 +63,19 @@ impl Node for ReturnStatement {
     }
 }
 
-#[derive(Clone)]
 pub struct Identifer {
     pub token: Box<Token>, // Ident token
     pub value: String,
+}
+
+impl Identifer {
+    pub fn new(token :Box<Token>) -> Self {
+        let value = token.literal.clone();
+        Self {
+            token,
+            value,
+        }
+    }
 }
 
 impl Node for Identifer {
