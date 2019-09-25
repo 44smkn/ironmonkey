@@ -3,6 +3,7 @@ use super::ast::{
 };
 use super::lexer::Lexer;
 use super::token::{Token, TokenType};
+use crate::ast::Node;
 use std::mem;
 
 #[derive(Debug, Clone)]
@@ -120,7 +121,7 @@ impl Parser {
         let ident = Identifer::new(second_token);
         let statement = LetStatement {
             token: first_token,
-            name: ident,
+            name: ident.clone(),
             value: ExpressionType::Identifer(ident),
         };
 

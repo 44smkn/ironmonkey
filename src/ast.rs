@@ -53,7 +53,7 @@ impl Node for LetStatement {
 }
 
 pub struct ReturnStatement {
-    pub token: Box<Token>, // LET token
+    pub token: Box<Token>, 
     pub value: ExpressionType,
 }
 
@@ -63,6 +63,7 @@ impl Node for ReturnStatement {
     }
 }
 
+#[derive(Clone)]
 pub struct Identifer {
     pub token: Box<Token>, // Ident token
     pub value: String,
