@@ -94,6 +94,7 @@ impl Parser {
             .map_or(TokenType::Illegal, |v| v.token_type)
         {
             TokenType::Let => self.parse_let_statement(),
+            TokenType::Return => self.parse_return_statement(),
             _ => StatementType::Illegal,
         }
     }
@@ -135,6 +136,22 @@ impl Parser {
         }
 
         StatementType::LetStatement(statement)
+    }
+
+    fn parse_return_statement(&mut self) -> StatementType {
+        let token =  match mem::replace(&mut self.cur_token, None) {
+            Some(token) => token,
+            None => panic!("not found current token"),
+        };
+        let statement = ReturnStatement {
+            token,
+            value: ExpressionType::Illegal,
+        };
+        self.next_token();
+        while !self.cur_token_is(TokenType::Semicolon) {
+            self.next_token()
+        }
+        StatementType::ReturnStatement(statement)
     }
 }
 

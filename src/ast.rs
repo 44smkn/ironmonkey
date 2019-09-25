@@ -20,12 +20,14 @@ impl Node for ExpressionType {
     fn token_literal(&self) -> String {
         match self {
             ExpressionType::Identifer(expression) => expression.token_literal(),
+            ExpressionType::Illegal => String::from("Illegal"),
         }
     }
 }
 
 pub enum ExpressionType {
     Identifer(Identifer),
+    Illegal,
 }
 
 pub trait Node {
@@ -53,7 +55,7 @@ impl Node for LetStatement {
 }
 
 pub struct ReturnStatement {
-    pub token: Box<Token>, 
+    pub token: Box<Token>,
     pub value: ExpressionType,
 }
 
@@ -70,12 +72,9 @@ pub struct Identifer {
 }
 
 impl Identifer {
-    pub fn new(token :Box<Token>) -> Self {
+    pub fn new(token: Box<Token>) -> Self {
         let value = token.literal.clone();
-        Self {
-            token,
-            value,
-        }
+        Self { token, value }
     }
 }
 
