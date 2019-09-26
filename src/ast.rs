@@ -65,6 +65,17 @@ impl Node for ReturnStatement {
     }
 }
 
+pub struct ExpressionStatement {
+    pub token: Box<Token>,
+    pub expression: ExpressionType,
+}
+
+impl Node for ExpressionStatement {
+    fn token_literal(&self) -> String {
+        String::from(&self.token.literal)
+    }
+}
+
 #[derive(Clone)]
 pub struct Identifer {
     pub token: Box<Token>, // Ident token
