@@ -35,9 +35,7 @@ impl Parser {
         let message = format!(
             "expected next token to be {:?}, got {:?} instead",
             token_type,
-            self.peek_token
-                .clone()
-                .map_or(TokenType::Illegal, |v| v.token_type)
+            discover_token_type(&self.peek_token)
         );
         self.errors.push(message);
     }
@@ -57,25 +55,18 @@ impl Parser {
     }
 
     fn peek_token_is(&mut self, token: &TokenType) -> bool {
-        self.peek_token
-            .clone()
-            .map_or(false, |v| v.token_type == *token)
+        discover_token_type(&self.peek_token) == *token
     }
 
     fn cur_token_is(&mut self, token: TokenType) -> bool {
-        self.cur_token
-            .clone()
-            .map_or(false, |v| v.token_type == token)
+        discover_token_type(&self.cur_token) == token
     }
 
     /// Repeat to read by calling next_token() token until reaching TokenType::Eof.
     /// Every time it repeats, call parse_statement() that analysis statement.
     fn parse_program(&mut self) -> Program {
         let mut program: Vec<StatementType> = Vec::new();
-        while self
-            .cur_token
-            .clone()
-            .map_or(true, |v| v.token_type != TokenType::Eof)
+        while discover_token_type(&self.cur_token) != TokenType::Eof
         {
             let statement = self.parse_statement();
             match statement {
@@ -88,10 +79,7 @@ impl Parser {
     }
 
     fn parse_statement(&mut self) -> StatementType {
-        match self
-            .cur_token
-            .clone()
-            .map_or(TokenType::Illegal, |v| v.token_type)
+        match discover_token_type(&self.cur_token)
         {
             TokenType::Let => self.parse_let_statement(),
             TokenType::Return => self.parse_return_statement(),
@@ -139,7 +127,7 @@ impl Parser {
     }
 
     fn parse_return_statement(&mut self) -> StatementType {
-        let token =  match mem::replace(&mut self.cur_token, None) {
+        let token = match mem::replace(&mut self.cur_token, None) {
             Some(token) => token,
             None => panic!("not found current token"),
         };
@@ -153,6 +141,10 @@ impl Parser {
         }
         StatementType::ReturnStatement(statement)
     }
+}
+
+fn discover_token_type(token: &Option<Box<Token>>) -> TokenType {
+    token.clone().map_or(TokenType::Illegal, |v| v.token_type)
 }
 
 #[cfg(test)]
