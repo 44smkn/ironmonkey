@@ -14,6 +14,9 @@ impl Node for StatementType {
             StatementType::Illegal => String::from("Illegal"),
         }
     }
+    fn string(&self) -> String {
+        unimplemented!();
+    }
 }
 
 impl Node for ExpressionType {
@@ -22,6 +25,9 @@ impl Node for ExpressionType {
             ExpressionType::Identifer(expression) => expression.token_literal(),
             ExpressionType::Illegal => String::from("Illegal"),
         }
+    }
+    fn string(&self) -> String {
+        unimplemented!();
     }
 }
 
@@ -32,6 +38,7 @@ pub enum ExpressionType {
 
 pub trait Node {
     fn token_literal(&self) -> String;
+    fn string(&self) -> String;
 }
 
 pub type Program = Vec<StatementType>;
@@ -39,6 +46,9 @@ pub type Program = Vec<StatementType>;
 impl Node for Program {
     fn token_literal(&self) -> String {
         self.get(0).map_or(String::new(), Node::token_literal)
+    }
+    fn string(&self) -> String {
+        unimplemented!();
     }
 }
 
@@ -52,6 +62,9 @@ impl Node for LetStatement {
     fn token_literal(&self) -> String {
         String::from(&self.token.literal)
     }
+    fn string(&self) -> String {
+        unimplemented!();
+    }
 }
 
 pub struct ReturnStatement {
@@ -63,6 +76,9 @@ impl Node for ReturnStatement {
     fn token_literal(&self) -> String {
         String::from(&self.token.literal)
     }
+    fn string(&self) -> String {
+        unimplemented!();
+    }
 }
 
 pub struct ExpressionStatement {
@@ -73,6 +89,9 @@ pub struct ExpressionStatement {
 impl Node for ExpressionStatement {
     fn token_literal(&self) -> String {
         String::from(&self.token.literal)
+    }
+    fn string(&self) -> String {
+        unimplemented!();
     }
 }
 
@@ -92,5 +111,8 @@ impl Identifer {
 impl Node for Identifer {
     fn token_literal(&self) -> String {
         String::from(&self.token.literal)
+    }
+    fn string(&self) -> String {
+        unimplemented!();
     }
 }
