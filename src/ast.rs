@@ -1,4 +1,6 @@
 use super::token::Token;
+use std::io;
+use std::io::Write;
 
 pub enum StatementType {
     LetStatement(LetStatement),
@@ -48,7 +50,11 @@ impl Node for Program {
         self.get(0).map_or(String::new(), Node::token_literal)
     }
     fn string(&self) -> String {
-        unimplemented!();
+        let mut buf = String::new();
+        for v in self {
+            buf.push_str(&v.string())
+        }
+        buf
     }
 }
 
@@ -81,6 +87,7 @@ impl Node for ReturnStatement {
     }
 }
 
+// x + 10; is valid in monkey
 pub struct ExpressionStatement {
     pub token: Box<Token>,
     pub expression: ExpressionType,
