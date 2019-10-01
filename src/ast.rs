@@ -132,6 +132,6 @@ impl Node for Identifer {
         String::from(&self.token.literal)
     }
     fn string(&self) -> String {
-        unimplemented!();
+        self.value.clone()
     }
 }
