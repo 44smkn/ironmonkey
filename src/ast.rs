@@ -90,7 +90,12 @@ impl Node for ReturnStatement {
         String::from(&self.token.literal)
     }
     fn string(&self) -> String {
-        unimplemented!();
+        let mut buf = String::new();
+
+        buf.push_str(&format!("{} ", self.token_literal()));
+        buf.push_str(&self.value.string());
+        buf.push_str(";");
+        buf
     }
 }
 
@@ -105,7 +110,7 @@ impl Node for ExpressionStatement {
         String::from(&self.token.literal)
     }
     fn string(&self) -> String {
-        unimplemented!();
+        self.expression.string()
     }
 }
 
