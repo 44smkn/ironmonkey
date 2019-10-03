@@ -149,6 +149,14 @@ impl Parser {
         }
         StatementType::ReturnStatement(statement)
     }
+
+    fn register_prefix(&mut self, token_type: TokenType, func: PrefixParseFn) {
+        self.prefix_parse_fns.insert(token_type, func);
+    }
+
+    fn register_infix(&mut self, token_type: TokenType, func: InfixParseFn) {
+        self.infix_parse_fns.insert(token_type, func);
+    }
 }
 
 fn discover_token_type(token: &Option<Box<Token>>) -> TokenType {
