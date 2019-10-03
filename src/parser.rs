@@ -3,8 +3,8 @@ use super::ast::{
 };
 use super::lexer::Lexer;
 use super::token::{Token, TokenType};
-use std::collections::HashMap;
 use crate::ast::Node;
+use std::collections::HashMap;
 use std::mem;
 
 // type alias
@@ -29,6 +29,8 @@ impl Parser {
             errors: Vec::new(),
             cur_token: Default::default(),
             peek_token: Default::default(),
+            prefix_parse_fns: Default::default(),
+            infix_parse_fns: Default::default(),
         };
         parser.next_token();
         parser.next_token();
