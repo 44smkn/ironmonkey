@@ -31,7 +31,7 @@ impl Default for Token {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum TokenType {
     Illegal, // UNKNOWN TOKEN OR STRING
     Eof,     // END OF FILE

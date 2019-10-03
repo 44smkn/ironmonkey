@@ -3,8 +3,13 @@ use super::ast::{
 };
 use super::lexer::Lexer;
 use super::token::{Token, TokenType};
+use std::collections::HashMap;
 use crate::ast::Node;
 use std::mem;
+
+// type alias
+type PrefixParseFn = fn() -> ExpressionType;
+type InfixParseFn = fn(ExpressionType) -> ExpressionType;
 
 #[derive(Debug, Clone)]
 struct Parser {
@@ -12,6 +17,9 @@ struct Parser {
     errors: Vec<String>,
     cur_token: Option<Box<Token>>,
     peek_token: Option<Box<Token>>,
+
+    prefix_parse_fns: HashMap<TokenType, PrefixParseFn>,
+    infix_parse_fns: HashMap<TokenType, InfixParseFn>,
 }
 
 impl Parser {
@@ -66,8 +74,7 @@ impl Parser {
     /// Every time it repeats, call parse_statement() that analysis statement.
     fn parse_program(&mut self) -> Program {
         let mut program: Vec<StatementType> = Vec::new();
-        while discover_token_type(&self.cur_token) != TokenType::Eof
-        {
+        while discover_token_type(&self.cur_token) != TokenType::Eof {
             let statement = self.parse_statement();
             match statement {
                 StatementType::Illegal => (),
@@ -79,8 +86,7 @@ impl Parser {
     }
 
     fn parse_statement(&mut self) -> StatementType {
-        match discover_token_type(&self.cur_token)
-        {
+        match discover_token_type(&self.cur_token) {
             TokenType::Let => self.parse_let_statement(),
             TokenType::Return => self.parse_return_statement(),
             _ => StatementType::Illegal,
