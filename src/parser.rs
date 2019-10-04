@@ -206,6 +206,7 @@ let foobar = 838383;
         }
     }
 
+    // check errors stored in the parser struct
     fn check_parse_errors(parser: &Parser) {
         let errors = parser.errors();
         if errors.len() == 0 {
@@ -244,5 +245,27 @@ return 993322;
             };
             assert_eq!(statement.token_literal(), "return");
         }
+    }
+
+    #[test]
+    fn identifer_expression() {
+        let input = "foobar;";
+
+        let lexer = Lexer::new(input);
+        let mut parser = Parser::new(lexer);
+        let program = parser.parse_program();
+        check_parse_errors(&parser);
+
+        assert_ne!(
+            program.len(),
+            1,
+            "program has enough statements. got={}",
+            program.len()
+        );
+        let ident = match program.get(0).unwrap() {
+            StatementType::ExpressionStatement(statement) => statement.Identifer
+        };
+        assert!(ident.unwrap().value, "foobar");
+        assert!(ident.unwrap().token_literal(), "foobar");
     }
 }

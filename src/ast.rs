@@ -5,7 +5,7 @@ use std::io::Write;
 pub enum StatementType {
     LetStatement(LetStatement),
     ReturnStatement(ReturnStatement),
-    Illegal,
+    ExpressionStatement(ExpressionStatement),
 }
 
 impl Node for StatementType {
@@ -13,7 +13,7 @@ impl Node for StatementType {
         match self {
             StatementType::LetStatement(statement) => statement.token_literal(),
             StatementType::ReturnStatement(statement) => statement.token_literal(),
-            StatementType::Illegal => String::from("Illegal"),
+            StatementType::ExpressionStatement(statement) => statement.token_literal(),
         }
     }
     fn string(&self) -> String {
