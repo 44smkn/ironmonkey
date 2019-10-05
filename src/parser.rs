@@ -78,10 +78,7 @@ impl Parser {
         let mut program: Vec<StatementType> = Vec::new();
         while discover_token_type(&self.cur_token) != TokenType::Eof {
             let statement = self.parse_statement();
-            match statement {
-                StatementType::Illegal => (),
-                _ => program.push(statement),
-            };
+            program.push(statement);
             self.next_token();
         }
         program
@@ -91,7 +88,7 @@ impl Parser {
         match discover_token_type(&self.cur_token) {
             TokenType::Let => self.parse_let_statement(),
             TokenType::Return => self.parse_return_statement(),
-            _ => StatementType::Illegal,
+            _ => self.parse_expression_statement(),
         }
     }
 
@@ -106,7 +103,7 @@ impl Parser {
         };
 
         if !self.expect_peek(TokenType::Ident) {
-            return StatementType::Illegal;
+            // TODO: return Result error
         }
         self.next_token();
 
@@ -123,7 +120,7 @@ impl Parser {
         };
 
         if !self.expect_peek(TokenType::Assign) {
-            return StatementType::Illegal;
+            // TODO: return Result error
         }
         self.next_token();
 
@@ -156,6 +153,10 @@ impl Parser {
 
     fn register_infix(&mut self, token_type: TokenType, func: InfixParseFn) {
         self.infix_parse_fns.insert(token_type, func);
+    }
+
+    fn parse_expression_statement(&mut self) -> StatementType {
+        unimplemented!();
     }
 }
 
@@ -263,7 +264,7 @@ return 993322;
             program.len()
         );
         let ident = match program.get(0).unwrap() {
-            StatementType::ExpressionStatement(statement) => statement.Identifer
+            StatementType::ExpressionStatement(statement) => statement.expression.Identifer,
         };
         assert!(ident.unwrap().value, "foobar");
         assert!(ident.unwrap().token_literal(), "foobar");
