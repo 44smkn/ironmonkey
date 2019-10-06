@@ -1,5 +1,6 @@
 use super::ast::{
-    ExpressionType, Identifer, LetStatement, ExpressionStatement, Program, ReturnStatement, StatementType,
+    ExpressionStatement, ExpressionType, Identifer, LetStatement, Program, ReturnStatement,
+    StatementType,
 };
 use super::lexer::Lexer;
 use super::token::{Token, TokenType};
@@ -160,7 +161,7 @@ impl Parser {
             Some(token) => token,
             None => panic!("not found current token"),
         };
-        let statement = ExpressionStatement{
+        let statement = ExpressionStatement {
             token: token,
             expression: self.parse_expression(),
         };
@@ -173,6 +174,16 @@ impl Parser {
     fn parse_expression(&mut self) -> ExpressionType {
         unimplemented!();
     }
+}
+
+enum OperatorPriority {
+    LOWEST = 1,
+    EQUALS = 2,      // ==
+    LESSGREATER = 3, // > or <
+    SUM = 4,         // +
+    PRODUCT = 5,     // *
+    PREFIX = 6,      // -X or !X
+    CALL = 7,        // myFunction(X)
 }
 
 fn discover_token_type(token: &Option<Box<Token>>) -> TokenType {
