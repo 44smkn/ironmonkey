@@ -1,5 +1,5 @@
 use super::ast::{
-    ExpressionType, Identifer, LetStatement, Program, ReturnStatement, StatementType,
+    ExpressionType, Identifer, LetStatement, ExpressionStatement, Program, ReturnStatement, StatementType,
 };
 use super::lexer::Lexer;
 use super::token::{Token, TokenType};
@@ -156,6 +156,21 @@ impl Parser {
     }
 
     fn parse_expression_statement(&mut self) -> StatementType {
+        let token = match mem::replace(&mut self.cur_token, None) {
+            Some(token) => token,
+            None => panic!("not found current token"),
+        };
+        let statement = ExpressionStatement{
+            token: token,
+            expression: self.parse_expression(),
+        };
+        if self.peek_token_is(&TokenType::Semicolon) {
+            self.next_token();
+        };
+        StatementType::ExpressionStatement(statement)
+    }
+
+    fn parse_expression(&mut self) -> ExpressionType {
         unimplemented!();
     }
 }
