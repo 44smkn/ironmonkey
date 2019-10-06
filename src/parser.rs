@@ -263,10 +263,15 @@ return 993322;
             "program has enough statements. got={}",
             program.len()
         );
-        let ident = match program.get(0).unwrap() {
-            StatementType::ExpressionStatement(statement) => statement.expression.Identifer,
+        let expression = match program.get(0).unwrap() {
+            StatementType::ExpressionStatement(statement) => &statement.expression,
+            _ => std::process::exit(1),
         };
-        assert!(ident.unwrap().value, "foobar");
-        assert!(ident.unwrap().token_literal(), "foobar");
+        let ident = match expression {
+            ExpressionType::Identifer(ident) => ident,
+            _ => std::process::exit(1),
+        };
+        assert_eq!(&ident.value, "foobar");
+        assert_eq!(ident.token_literal(), "foobar");
     }
 }
